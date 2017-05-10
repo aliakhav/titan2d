@@ -2560,7 +2560,8 @@ EleNodeRef::EleNodeRef(ElementsHashTable *_ElemTable, NodeHashTable* _NodeTable)
                 eigenvxymax_(ElemTable->eigenvxymax_),
                 coord_(ElemTable->coord_),
                 node_key_(ElemTable->node_key_),
-                node_bubble_ndx_(ElemTable->node_bubble_ndx_)
+                node_bubble_ndx_(ElemTable->node_bubble_ndx_),
+				STs_(ElemTable->STs_)
 
 {
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);

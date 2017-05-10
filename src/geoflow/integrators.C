@@ -296,6 +296,12 @@ Integrator_SinglePhase::Integrator_SinglePhase(cxxTitanSimulation *_titanSimulat
         h(state_vars_[0]),
         hVx(state_vars_[1]),
         hVy(state_vars_[2]),
+		S_gx(STs_[0]),
+		S_gy(STs_[NUM_STATE_VARS]),
+		S_bedx(STs_[1]),
+		S_bedy(STs_[NUM_STATE_VARS+1]),
+		S_intx(STs_[2]),
+		S_inty(STs_[NUM_STATE_VARS+2]),
         dh_dx(d_state_vars_[0]),
         dh_dy(d_state_vars_[NUM_STATE_VARS]),
         dhVx_dx(d_state_vars_[1]),
@@ -905,6 +911,14 @@ void Integrator_SinglePhase_Coulomb::corrector()
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        S_gx[ndx] = g[0][ndx] * h[ndx];
+        S_bedx[ndx] = forcebedx;
+        S_intx[ndx] = forceintx;
+
+        S_gy[ndx] = g[1][ndx] * h[ndx];
+        S_bedy[ndx] = forcebedy;
+        S_inty[ndx] = forceinty;
+
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);
         m_realvolume += dxdy * h[ndx];
@@ -1190,6 +1204,14 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
 
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        S_gx[ndx] = g[0][ndx] * h[ndx];
+        S_bedx[ndx] = forcebedx;
+        S_intx[ndx] = forceintx;
+
+        S_gy[ndx] = g[1][ndx] * h[ndx];
+        S_bedy[ndx] = forcebedy;
+        S_inty[ndx] = forceinty;
 
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);
@@ -1535,6 +1557,14 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        S_gx[ndx] = g[0][ndx] * h[ndx];
+        S_bedx[ndx] = forcebedx;
+        S_intx[ndx] = forceintx;
+
+        S_gy[ndx] = g[1][ndx] * h[ndx];
+        S_bedy[ndx] = forcebedy;
+        S_inty[ndx] = forceinty;
 
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);

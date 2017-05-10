@@ -656,6 +656,8 @@ public:
     vector<ti_ndx_t> node_ndx_buffer;
 
     ElementsProperties *ElemProp;
+
+    tivector<double> STs_[MAX_NUM_STATE_VARS];
 };
 
 
@@ -702,6 +704,7 @@ public:
     tivector<double> *kactxy_;
     tivector<int> &material_;
     tivector<int> &myprocess_;
+    tivector<double> *STs_;
 
     tivector<int> &which_son_;
     tivector<int> &opposite_brother_flag_;

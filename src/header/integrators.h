@@ -147,6 +147,12 @@ protected:
     tivector<double> &h;
     tivector<double> &hVx;
     tivector<double> &hVy;
+    tivector<double> &S_gx;
+    tivector<double> &S_bedx;
+    tivector<double> &S_intx;
+    tivector<double> &S_gy;
+    tivector<double> &S_bedy;
+    tivector<double> &S_inty;
 
     tivector<double> &dh_dx;
     tivector<double> &dh_dy;

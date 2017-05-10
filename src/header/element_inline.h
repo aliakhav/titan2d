@@ -403,6 +403,10 @@ inline void Element::set_shortspeed(double shortspeedin) {
     elementsHashTable->shortspeed_[ndx_] = shortspeedin;
 }
 
+//! this function returns the vector of state variables
+inline double Element::STs(int idim) const {return elementsHashTable->STs_[idim][ndx_];}
+inline void Element::STs(int idim, double value) {elementsHashTable->STs_[idim][ndx_] =value;}
+
 
 //! this function returns the already calculated value(s) of k active passive, which comes from using th Coulomb friction model of granular flows (this is problem specific to titan and thus does not appear in the standard afeapi code)
 inline double& Element::kactxy_ref(const int idim){return elementsHashTable->kactxy_[idim][ndx_];}

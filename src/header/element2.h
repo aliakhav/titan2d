@@ -532,7 +532,8 @@ public:
     void set_kactxy(double kap[DIMENSION]);
     
 
-
+    double STs(int idim) const ;
+    void STs(int idim, double value);
 
     
 
