@@ -1494,7 +1494,7 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			// the bed friction forces for fast moving flow in x direction
 			forcebedx = unitvx * mu_bed * (h[ndx] * g[2][ndx] + VxVy[0] * hVx[ndx] * curvature_[0][ndx]);
 
-			forcebedx2 = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
+			forceintx = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
 
 			//STOPPING CRITERIA
 //			inertial_x = fabs( Ustore[1] + dt * forcegravx );
@@ -1517,7 +1517,7 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			// the bed friction forces for fast moving flow in y direction
 			forcebedy = unitvy * mu_bed * (h[ndx] * g[2][ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx]);
 
-			forcebedy2 = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
+			forceinty = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
 
 			//STOPPING CRITERIA
 //			inertial_y = fabs( Ustore[2] + dt * forcegravy );
