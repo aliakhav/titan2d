@@ -838,6 +838,9 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
         }
     }
 #endif
+
+    if (timeprops.iVizOutSaved > 0)
+    	outline.outputST(matprops, &timeprops);
 }
 
 void cxxTitanSimulation::run(bool start_from_restart)

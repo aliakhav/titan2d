@@ -1641,7 +1641,7 @@ void OutLine::output(MatProps* matprops_ptr, StatProps* statprops_ptr)
 /*! this function outputs the maximum over time map of pileheights
  *  to the file pileheightrecord.xxxxxx
  */
-void OutLine::outputST(MatProps* matprops_ptr, StatProps* statprops_ptr, TimeProps* timeprops_ptr)
+void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 {
 	double ST_SCALE = matprops_ptr->scale.height * matprops_ptr->scale.gravity;
 

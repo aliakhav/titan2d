@@ -899,7 +899,7 @@ public:
     void output(MatProps* matprops_ptr, StatProps* statprops_ptr);
     
     //! this function is for writing Source Terms components into output files
-    void outputST(MatProps* matprops_ptr, StatProps* statprops_ptr, TimeProps* timeprops_ptr);
+    void outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr);
 
     //! this function reads in the previous map of maximum throughout time pileheight stored in the file pileheightrecord.xxxxxx during restart
     void reload(MatProps* matprops_ptr, StatProps* statprops_ptr);
