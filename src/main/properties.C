@@ -867,7 +867,7 @@ void OutLine::init_DEM_resolution(double resx, double resy, double *XRange, doub
     stride=Nx;
     if(myid==0 && enabled)
     {
-//        printf("Outline init: Nx=%d Ny=%d dx=%.5g dy=%.5g\n", Nx, Ny, dx*scale->length, dy*scale->length);
+        printf("Outline init: Nx=%d Ny=%d dx=%.5g dy=%.5g\n", Nx, Ny, dx*scale->length, dy*scale->length);
         printf("Outline init: temporary arrays for %d threads\n", threads_number);
     }
 
@@ -1463,8 +1463,8 @@ void OutLine::output(MatProps* matprops_ptr, StatProps* statprops_ptr)
         for(iy = 0; iy < Ny; iy++)
         {
             for(ix = 0; ix < Nx - 1; ix++)
-                fprintf(fp, "%g ", pileheight[iy*stride+ix] * matprops_ptr->scale.height);
-            fprintf(fp, "%g\n", pileheight[iy*stride+ix] * matprops_ptr->scale.height);
+                fprintf(fp, "%g ", S_gx[iy*stride+ix] * matprops_ptr->scale.height * matprops_ptr->scale.gravity);
+            fprintf(fp, "%g\n", S_gx[iy*stride+ix] * matprops_ptr->scale.height * matprops_ptr->scale.gravity);
         }
         fclose(fp);
 
@@ -1645,86 +1645,110 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 {
 	double ST_SCALE = matprops_ptr->scale.height * matprops_ptr->scale.gravity;
 
-	// output for S_gx
+	// output for S_g
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	int ix, iy;
-	FILE *fp;
-	char filename[256];
-	sprintf(filename, "%Sgx_i%08d.csv", timeprops_ptr->iter);
+        filename1<<output_prefix<<"S_gx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	fp = fopen(filename, "wt");
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_gx[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_gx[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_gx[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_gx[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	// output for S_bedx
+        filename1<<output_prefix<<"S_gy."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	sprintf(filename, "%Sbedx_i%08d.csv", timeprops_ptr->iter);
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_gy[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_gy[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
-	fp = fopen(filename, "wt");
+    // output for S_bed
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_bedx[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_bedx[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
+        filename1<<output_prefix<<"S_bedx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	// output for S_intx
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_bedx[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_bedx[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
-	sprintf(filename, "%Sintx_i%08d.csv", timeprops_ptr->iter);
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	fp = fopen(filename, "wt");
+        filename1<<output_prefix<<"S_bedy."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_intx[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_intx[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_bedy[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_bedy[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
-	// output for S_gy
+    // output for S_int
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	sprintf(filename, "%Sgy_i%08d.csv", timeprops_ptr->iter);
+        filename1<<output_prefix<<"S_intx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	fp = fopen(filename, "wt");
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_intx[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_intx[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_gy[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_gy[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
+    {
+        int ix, iy;
+        FILE *fp;
+        ostringstream filename1;
 
-	// output for S_bedy
+        filename1<<output_prefix<<"S_inty."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+        fp = fopen(filename1.str().c_str(), "wt");
 
-	sprintf(filename, "%Sbedy_i%08d.csv", timeprops_ptr->iter);
-
-	fp = fopen(filename, "wt");
-
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_bedy[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_bedy[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
-
-	// output for S_inty
-
-	sprintf(filename, "%Sinty_i%08d.csv", timeprops_ptr->iter);
-
-	fp = fopen(filename, "wt");
-
-	for (iy = 0; iy < Ny; iy++) {
-		for (ix = 0; ix < Nx - 1; ix++)
-			fprintf(fp, "%g,", S_inty[iy * stride + ix] * ST_SCALE);
-		fprintf(fp, "%g\n", S_inty[iy * stride + ix] * ST_SCALE);
-	}
-	fclose(fp);
+        for(iy = 0; iy < Ny; iy++)
+        {
+            for(ix = 0; ix < Nx - 1; ix++)
+                fprintf(fp, "%g,", S_inty[iy*stride+ix] * ST_SCALE);
+            fprintf(fp, "%g\n", S_inty[iy*stride+ix] * ST_SCALE);
+        }
+        fclose(fp);
+    }
 
     return;
 }
