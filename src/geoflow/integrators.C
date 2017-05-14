@@ -1153,7 +1153,7 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             forcegravx = g[0][ndx] * h[ndx];
 
             //the Coulomb type friction force in x direction
-            forcebedx = unitvx * mu * g[2][ndx] * h[ndx] + VxVy[0] * hVx[ndx] * curvature_[0][ndx];
+            forcebedx = unitvx * mu * c_dmax1(g[2][ndx] * h[ndx] + VxVy[0] * hVx[ndx] * curvature_[0][ndx], 0.0);
 
             //the Turbulent type force for fast moving flow in x direction
             forceintx = unitvx * speed_squared * inv_xi / scale_.epsilon;
@@ -1168,7 +1168,7 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             forcegravy = g[1][ndx] * h[ndx];
 
             // the Coulomb type friction force  in y direction
-            forcebedy = unitvy * mu * g[2][ndx] * h[ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx];
+            forcebedy = unitvy * mu * c_dmax1(g[2][ndx] * h[ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx], 0.0);
 
             // the Turbulent type force for fast moving flow in y direction
             forceinty = unitvy * speed_squared * inv_xi / scale_.epsilon;
@@ -1472,17 +1472,14 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
             //ccccccccccccccc Calculation of mu_bed(Local_Fr,h) ccccccccccccccccc
 
-            //Dynamic flow regime
-			if ( Local_Fr >= Beta )
-				mu_bed = mu_1 + ( mu_2 - mu_1 ) / ( 1.0 + kactxy[ndx] * h[ndx] * Beta / ( L_material * Local_Fr ) );
-
-            //Intermediate flow regime
-			else if ( ( Local_Fr < Beta ) && ( Local_Fr > 0.0 ) )
+            //Dynamic flow regime, Intermediate flow regime, Static regime
+			if ( Local_Fr >= Beta ) {
+				mu_bed = mu_1 + ( mu_2 - mu_1 ) / ( 1.0 + scale_.epsilon * h[ndx] * Beta / ( L_material * Local_Fr ) );
+			} else if ( ( Local_Fr < Beta ) && ( Local_Fr > 0.0 ) ) {
 				mu_bed = mu_3 + pow( ( Local_Fr / Beta ), 0.001 ) * ( mu_1 - mu_3 ) + ( mu_2 - mu_1 ) / ( 1.0 + scale_.epsilon * h[ndx] / L_material );
-
-            //Static regime
-			else if ( Local_Fr == 0.0 )
+			} else if ( Local_Fr == 0.0 ) {
 				mu_bed = mu_3 + ( mu_2 - mu_1 ) / ( 1.0 + scale_.epsilon * h[ndx] / L_material);
+			}
 
 			//ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 			// x direction source terms
@@ -1492,7 +1489,7 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			forcegravx = g[0][ndx] * h[ndx];
 
 			// the bed friction forces for fast moving flow in x direction
-			forcebedx = unitvx * mu_bed * (h[ndx] * g[2][ndx] + VxVy[0] * hVx[ndx] * curvature_[0][ndx]);
+			forcebedx = unitvx * mu_bed * c_dmax1(g[2][ndx] * h[ndx] + VxVy[0] * hVx[ndx] * curvature_[0][ndx], 0.0);
 
 			forceintx = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
 
@@ -1515,7 +1512,7 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			forcegravy = g[1][ndx] * h[ndx];
 
 			// the bed friction forces for fast moving flow in y direction
-			forcebedy = unitvy * mu_bed * (h[ndx] * g[2][ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx]);
+			forcebedy = unitvy * mu_bed * c_dmax1(g[2][ndx] * h[ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx], 0.0);
 
 			forceinty = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
 
