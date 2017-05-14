@@ -1097,6 +1097,8 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
         double forcegravx,forcegravy;
         double unitvx, unitvy;
         double Ustore[3];
+	double inertial_x, inertial_y;
+        double drag_x, drag_y;
 
         double slope = sqrt(zeta_[0][ndx] * zeta_[0][ndx] + zeta_[1][ndx] * zeta_[1][ndx]);
 
@@ -1158,8 +1160,15 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             //the Turbulent type force for fast moving flow in x direction
             forceintx = unitvx * speed_squared * inv_xi / scale_.epsilon;
 
-            Ustore[1] = Ustore[1] + dt * (forcegravx - forcebedx - forceintx);
+            //STOPPING CRITERIA
+            inertial_x = fabs( Ustore[1] + dt * forcegravx );
 
+            drag_x = fabs( dt * ( forceintx + forcebedx ) );
+
+            if ( inertial_x > drag_x )
+            	Ustore[1] = Ustore[1] + dt * (forcegravx - forcebedx - forceintx);
+            else
+                Ustore[1] = 0.0;
              //ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
              // y direction source terms
              //cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1173,7 +1182,15 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             // the Turbulent type force for fast moving flow in y direction
             forceinty = unitvy * speed_squared * inv_xi / scale_.epsilon;
 
-            Ustore[2] = Ustore[2] + dt * (forcegravy - forcebedy - forceinty);
+	    //STOPPING CRITERIA
+	    inertial_y = fabs( Ustore[2] + dt * forcegravy );
+
+	    drag_y = fabs( dt * ( forceinty + forcebedy ) );
+
+	    if ( inertial_y > drag_y )
+            	Ustore[2] = Ustore[2] + dt * (forcegravy - forcebedy - forceinty);
+	    else
+		Ustore[2] = 0.0;
 
         }
 
@@ -1405,12 +1422,11 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
         double speed;
         double forceintx, forceinty;
         double forcebedx, forcebedy;
-        double forcebedx2, forcebedy2;
         double forcegravx, forcegravy;
         double unitvx, unitvy;
         double Ustore[3];
         double mu_bed, mu_1, mu_2, mu_3, Local_Fr;
-        double inertial_x,inertial_y,drag_x, drag_y;
+        double inertial_x, inertial_y, drag_x, drag_y;
 
 
         double slope = sqrt(zeta_[0][ndx] * zeta_[0][ndx] + zeta_[1][ndx] * zeta_[1][ndx]);
@@ -1494,14 +1510,14 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			forceintx = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
 
 			//STOPPING CRITERIA
-//			inertial_x = fabs( Ustore[1] + dt * forcegravx );
+			inertial_x = fabs( Ustore[1] + dt * forcegravx );
 
-//			drag_x = fabs( dt * ( forcebedx1 + forcebedx2 ) );
+			drag_x = fabs( dt * ( forcebedx + forceintx ) );
 
-//			if ( inertial_x > drag_x )
+			if ( inertial_x > drag_x )
 				Ustore[1] = Ustore[1] + dt * ( forcegravx - forcebedx - forceintx );
-//			else
-//				Ustore[1] = 0.0;
+			else
+				Ustore[1] = 0.0;
 
 			//cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 			// y direction source terms
@@ -1517,14 +1533,14 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			forceinty = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
 
 			//STOPPING CRITERIA
-//			inertial_y = fabs( Ustore[2] + dt * forcegravy );
+			inertial_y = fabs( Ustore[2] + dt * forcegravy );
 
-//			drag_y = fabs( dt * ( forcebedy1 + forcebedy2 ) );
+			drag_y = fabs( dt * ( forcebedy + forceinty ) );
 
-//			if ( inertial_y > drag_y )
+			if ( inertial_y > drag_y )
 				Ustore[2] = Ustore[2] + dt * ( forcegravy - forcebedy - forceinty );
-//			else
-//				Ustore[2] = 0.0;
+			else
+				Ustore[2] = 0.0;
         }
 
 
