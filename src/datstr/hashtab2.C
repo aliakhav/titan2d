@@ -1602,6 +1602,7 @@ ti_ndx_t ElementsHashTable::addElement_ndx(const SFC_Key& keyi)
     for(int i=0;i<NUM_STATE_VARS;++i)state_vars_[i].push_back();
     for(int i=0;i<NUM_STATE_VARS;++i)prev_state_vars_[i].push_back();
     for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)d_state_vars_[i].push_back();
+    for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)STs_[i].push_back();
     shortspeed_.push_back();
     for(int i=0;i<DIMENSION;++i)dx_[i].push_back();
     positive_x_side_.push_back();
@@ -1746,6 +1747,7 @@ void ElementsHashTable::flushElemTable()
     for(int i=0;i<NUM_STATE_VARS;++i)state_vars_[i].__reorder_prolog(size);
     for(int i=0;i<NUM_STATE_VARS;++i)prev_state_vars_[i].__reorder_prolog(size);
     for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)d_state_vars_[i].__reorder_prolog(size);
+    for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)STs_[i].__reorder_prolog(size);
     shortspeed_.__reorder_prolog(size);
     for(int i=0;i<DIMENSION;++i)dx_[i].__reorder_prolog(size);
     positive_x_side_.__reorder_prolog(size);
@@ -1966,6 +1968,7 @@ void ElementsHashTable::flushElemTable()
                 for(int j=0;j<DIMENSION;++j)
                 {
                     d_state_vars_[i*DIMENSION+j].__reorder_body_byblocks(start, end,new_order);
+                    STs_[i*DIMENSION+j].__reorder_body_byblocks(start, end,new_order);
                 }
 
             }
@@ -2061,6 +2064,7 @@ void ElementsHashTable::reserve(const tisize_t new_reserve_size)
     for(int i=0;i<NUM_STATE_VARS;++i)state_vars_[i].reserve(new_reserve_size);
     for(int i=0;i<NUM_STATE_VARS;++i)prev_state_vars_[i].reserve(new_reserve_size);
     for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)d_state_vars_[i].reserve(new_reserve_size);
+    for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)STs_[i].reserve(new_reserve_size);
     shortspeed_.reserve(new_reserve_size);
     for(int i=0;i<DIMENSION;++i)dx_[i].reserve(new_reserve_size);
     positive_x_side_.reserve(new_reserve_size);
@@ -2167,6 +2171,8 @@ void ElementsHashTable::resize(const tisize_t new_resize)
         {for(int i=0;i<NUM_STATE_VARS;++i)prev_state_vars_[i].resize(new_resize);}
 #pragma omp section
         {for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)d_state_vars_[i].resize(new_resize);}
+#pragma omp section
+        {for(int i=0;i<NUM_STATE_VARS * DIMENSION;++i)STs_[i].resize(new_resize);}
 #pragma omp section
         shortspeed_.resize(new_resize);
 #pragma omp section
@@ -2404,6 +2410,7 @@ void ElementsHashTable::h5write(H5::CommonFG *parent, const string group_name)
     TiH5_writeTiVectorArrayCompName(group,state_vars_,NUM_STATE_VARS,ElementTypesVarNames,dims);
     TiH5_writeTiVectorArrayCompName(group,prev_state_vars_,NUM_STATE_VARS,ElementTypesVarNames,dims);
     TiH5_writeTiVectorArray(group,d_state_vars_,NUM_STATE_VARS * DIMENSION,dims);
+    TiH5_writeTiVectorArray(group,STs_,NUM_STATE_VARS * DIMENSION,dims);
     TiH5_writeTiVector(group,shortspeed_,dims);
     TiH5_writeTiVectorArrayCompName(group,dx_,DIMENSION,&coord_names,dims);
     TiH5_writeTiVector(group,positive_x_side_,dims);
@@ -2484,6 +2491,7 @@ void ElementsHashTable::h5read(const H5::CommonFG *parent, const  string group_n
     TiH5_readTiVectorArrayCompName(group,state_vars_,NUM_STATE_VARS,ElementTypesVarNames);
     TiH5_readTiVectorArrayCompName(group,prev_state_vars_,NUM_STATE_VARS,ElementTypesVarNames);
     TiH5_readTiVectorArray(group,d_state_vars_,NUM_STATE_VARS * DIMENSION);
+    TiH5_readTiVectorArray(group,STs_,NUM_STATE_VARS * DIMENSION);
     TiH5_readTiVector(group,shortspeed_);
     TiH5_readTiVectorArrayCompName(group,dx_,DIMENSION,&coord_names);
     TiH5_readTiVector(group,positive_x_side_);

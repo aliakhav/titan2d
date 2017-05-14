@@ -176,7 +176,10 @@ void Element::init(const SFC_Key* nodekeys, const SFC_Key* neigh, int n_pro[], i
     }
 
     for(i = 0; i < DIMENSION * NUM_STATE_VARS; i++)
+    {
         d_state_vars(i, 0.0);
+    	STs(i,0.0);
+    }
     
     for(i = 0; i < NUM_STATE_VARS; i++)
         Influx(i, 0.0);
@@ -214,7 +217,10 @@ void Element::init(const SFC_Key* nodekeys, const SFC_Key* neigh, int n_pro[], i
         Influx(i, 0.);
     }
     for(i = 0; i < DIMENSION * NUM_STATE_VARS; i++)
+    {
         d_state_vars(i, 0.);
+        STs(i,0.0);
+    }
     
     set_father(sfc_key_zero);
     father_ndx(ti_ndx_doesnt_exist);
@@ -332,7 +338,10 @@ void Element::init(const SFC_Key* nodekeys, const SFC_Key* neigh, int n_pro[], i
         Influx(i, 0.);
     }
     for(i = 0; i < DIMENSION * NUM_STATE_VARS; i++)
+    {
         d_state_vars(i, 0.);
+        STs(i,0.0);
+    }
     
     set_father(sfc_key_zero);
     father_ndx(ti_ndx_doesnt_exist);
@@ -451,7 +460,10 @@ void Element::init(const SFC_Key* nodekeys, const ti_ndx_t* nodes_ndx, const SFC
         Influx(i, 0.);
     }
     for(i = 0; i < DIMENSION * NUM_STATE_VARS; i++)
+    {
         d_state_vars(i, 0.);
+        STs(i,0.0);
+    }
 
     set_father(sfc_key_zero);
     father_ndx(ti_ndx_doesnt_exist);
@@ -576,7 +588,10 @@ void Element::init(ti_ndx_t *sons_ndx, NodeHashTable* NodeTable, ElementsHashTab
         Influx(i, 0.);
     }
     for(int i = 0; i < DIMENSION * NUM_STATE_VARS; i++)
+    {
         d_state_vars(i, 0.);
+        STs(i,0.0);
+    }
     
     set_father(sfc_key_zero);
     father_ndx(ti_ndx_doesnt_exist);
