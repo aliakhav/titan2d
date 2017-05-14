@@ -839,7 +839,7 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     }
 #endif
 
-    if (timeprops.iVizOutSaved > 0 && elementType==ElementType::SinglePhase)
+    if (timeprops.iVizOutSaved > 0 && outline.enabled)
     {
     	outline.combine_results_from_threads();
     	outline.outputST(matprops, &timeprops);
