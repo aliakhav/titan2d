@@ -1653,7 +1653,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_gx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_gx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
@@ -1670,7 +1670,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_gy."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_gy."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
@@ -1688,7 +1688,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_bedx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_bedx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
@@ -1705,7 +1705,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_bedy."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_bedy."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
@@ -1723,7 +1723,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_intx."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_intx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
@@ -1740,7 +1740,7 @@ void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
 	        FILE *fp;
 	        ostringstream filename1;
 
-	        filename1<<output_prefix<<"S_inty."<<setw(6)<< setfill('0') <<internal<<timeprops_ptr->iter<<std::ends;
+	        filename1<<output_prefix<<"S_inty."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
 	        fp = fopen(filename1.str().c_str(), "wt");
 
 	        for(iy = 0; iy < Ny; iy++)
