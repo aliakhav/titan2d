@@ -62,7 +62,6 @@ int NUM_STATE_VARS;
 bool SHORTSPEED;
 double GEOFLOW_TINY;
 
-
 cxxTitanSimulation::cxxTitanSimulation() :
         integrator(nullptr),
         matprops(nullptr),
@@ -845,6 +844,60 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     	outline.outputST(matprops, &timeprops);
     }
 
+    if (timeprops.iVizOutSaved > 0){
+
+        double temp_Sgx=0.0, temp_Sgy=0.0, temp_Sbx=0.0, temp_Sby=0.0, temp_Six=0.0, temp_Siy=0.0, temp_A=0.0;
+
+    	int no_of_buckets = ElemTable->get_no_of_buckets();
+    	vector<HashEntryLine> &bucket = ElemTable->bucket;
+    	tivector<Element> &elenode_ = ElemTable->elenode_;
+
+    	//@ElementsBucketDoubleLoop
+    	for (int ibuck = 0; ibuck < no_of_buckets; ibuck++) {
+    		for (int ielm = 0; ielm < bucket[ibuck].ndx.size(); ielm++) {
+    			Element* Curr_El = &(elenode_[bucket[ibuck].ndx[ielm]]);
+
+    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
+    				temp_Sgx += Curr_El->STs(0)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_Sgy += Curr_El->STs(NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_Sbx += Curr_El->STs(1)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_Sby += Curr_El->STs(1 + NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_Six += Curr_El->STs(2)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_Siy += Curr_El->STs(2 + NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
+    				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
+
+    				if (Curr_El->coord(0) < 0.0)
+    					XX.push_back(Curr_El->coord(0)*scale_.length/cos(38.5*PI/180.0));
+    				else
+    					XX.push_back(Curr_El->coord(0)*scale_.length);
+    				YY.push_back(Curr_El->coord(1)*scale_.length);
+    			}
+    		}
+    	}
+//    	double X_max;
+//    	int SXX = XX.size();
+//    	std::sort( XX, XX+SXX );
+//    	sort( YY.begin(), YY.end() );
+//    	std::vector<double>::iterator X_max;
+//    	X_max = max_element(XX.begin(), XX.end());
+//    	double X_min = min_element(XX.begin(), XX.end());
+//
+//    	double Y_max = max_element(YY.begin(), YY.end());
+//
+//    	X_el.push_back(fabs(X_max - X_min));
+//    	Y_el.push_back(2.0*Y_max);
+
+        SSgx.push_back(temp_Sgx/temp_A);
+        SSgy.push_back(temp_Sgy/temp_A);
+        SSbx.push_back(temp_Sbx/temp_A);
+        SSby.push_back(temp_Sby/temp_A);
+        SSix.push_back(temp_Six/temp_A);
+        SSiy.push_back(temp_Siy/temp_A);
+
+
+    }
+
+
 }
 
 void cxxTitanSimulation::run(bool start_from_restart)
@@ -1180,7 +1233,29 @@ void cxxTitanSimulation::run(bool start_from_restart)
             titanTimingsAlongSimulation.totalTime = MPI_Wtime();
         }
         PROFILING1_STOPADD_RESTART(tsim_iter_post,pt_start);
+
+    	if((adapt != 0) && (timeprops.iter % 5 == 4))
+    		N_elements.push_back(ElemTable->get_no_of_entries());
+
     }
+
+    FILE *fp;
+    fp = fopen("elements.dat","w");
+    for(i = 0; i < N_elements.size(); i++)
+    	fprintf(fp,"%.0f\n", N_elements[i]);
+    fclose(fp);
+
+    FILE *fp1;
+    fp1 = fopen("STs.dat","w");
+    for(i = 0; i < SSgx.size(); i++)
+    	fprintf(fp,"%e,%e,%e,%e,%e,%e\n", SSgx[i], SSgy[i], SSbx[i], SSby[i], SSix[i], SSiy[i]);
+    fclose(fp1);
+
+    FILE *fp2;
+    fp2 = fopen("Extents.dat","w");
+    for(i = 0; i < X_el.size(); i++)
+    	fprintf(fp,"%e,%e\n", X_el[i], Y_el[i]);
+    fclose(fp2);
 
     move_data(numprocs, myid, ElemTable, NodeTable, &timeprops);
     PROFILING1_STOP(tsim_iter,pt_start0);

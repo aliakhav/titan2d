@@ -159,7 +159,18 @@ protected:
     std::string prev_hf5_filename;
     std::string prev_xmdf_snapshot;
 
+    std::vector<double> N_elements;
+    std::vector<double> SSgx;
+    std::vector<double> SSgy;
+    std::vector<double> SSbx;
+    std::vector<double> SSby;
+    std::vector<double> SSix;
+    std::vector<double> SSiy;
 
+    std::vector<double> XX;
+    std::vector<double> YY;
+    std::vector<double> X_el;
+    std::vector<double> Y_el;
 
 };
 
