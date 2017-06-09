@@ -874,18 +874,27 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     			}
     		}
     	}
-//    	double X_max;
-//    	int SXX = XX.size();
-//    	std::sort( XX, XX+SXX );
-//    	sort( YY.begin(), YY.end() );
+
+    	double X_max,X_min,Y_max,Y_min;
+    	int SXX = XX.size();
+    	int SYY = YY.size();
+    	std::sort( XX.begin(), XX.end() );
+    	std::sort( YY.begin(), YY.end() );
+    	X_min = XX[0];
+    	X_max = XX[SXX-1];
+    	Y_min = YY[0];
+    	Y_max = YY[SYY-1];
 //    	std::vector<double>::iterator X_max;
 //    	X_max = max_element(XX.begin(), XX.end());
-//    	double X_min = min_element(XX.begin(), XX.end());
 //
-//    	double Y_max = max_element(YY.begin(), YY.end());
+//    	std::vector<double>::iterator X_min;
+//    	X_min = min_element(XX.begin(), XX.end());
 //
-//    	X_el.push_back(fabs(X_max - X_min));
-//    	Y_el.push_back(2.0*Y_max);
+//    	std::vector<double>::iterator Y_max;
+//    	Y_max = max_element(YY.begin(), YY.end());
+
+    	X_el.push_back(fabs(X_max - X_min));
+    	Y_el.push_back(fabs(Y_max - Y_min));
 
         SSgx.push_back(temp_Sgx/temp_A);
         SSgy.push_back(temp_Sgy/temp_A);
