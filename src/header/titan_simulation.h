@@ -161,6 +161,7 @@ protected:
     std::string prev_xmdf_snapshot;
 
     std::vector<double> N_elements;
+    std::vector<double> Time_el;
     std::vector<double> SSgx;
     std::vector<double> SSgy;
     std::vector<double> SSbx;

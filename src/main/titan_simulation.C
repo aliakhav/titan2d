@@ -884,14 +884,6 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     	X_max = XX[SXX-1];
     	Y_min = YY[0];
     	Y_max = YY[SYY-1];
-//    	std::vector<double>::iterator X_max;
-//    	X_max = max_element(XX.begin(), XX.end());
-//
-//    	std::vector<double>::iterator X_min;
-//    	X_min = min_element(XX.begin(), XX.end());
-//
-//    	std::vector<double>::iterator Y_max;
-//    	Y_max = max_element(YY.begin(), YY.end());
 
     	X_el.push_back(fabs(X_max - X_min));
     	Y_el.push_back(fabs(Y_max - Y_min));
@@ -1244,14 +1236,17 @@ void cxxTitanSimulation::run(bool start_from_restart)
         PROFILING1_STOPADD_RESTART(tsim_iter_post,pt_start);
 
     	if((adapt != 0) && (timeprops.iter % 5 == 4))
+    	{
     		N_elements.push_back(ElemTable->get_no_of_entries());
+    		Time_el.push_back(timeprops.cur_time * timeprops.TIME_SCALE);
+    	}
 
     }
 
     FILE *fp;
     fp = fopen("elements.dat","w");
     for(i = 0; i < N_elements.size(); i++)
-    	fprintf(fp,"%.0f\n", N_elements[i]);
+    	fprintf(fp,"%.0f,%e\n", N_elements[i], Time_el[i]);
     fclose(fp);
 
     FILE *fp1;
