@@ -846,7 +846,10 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
 
     if (timeprops.iVizOutSaved > 0){
 
-        double temp_Sgx=0.0, temp_Sgy=0.0, temp_Sbx=0.0, temp_Sby=0.0, temp_Six=0.0, temp_Siy=0.0, temp_A=0.0;
+        double temp_Fdx=0.0, temp_Fdy=0.0, temp_Fbx=0.0, temp_Fby=0.0, temp_Fix=0.0, temp_Fiy=0.0, temp_A=0.0;
+        double temp_Pd=0.0, temp_Pb=0.0, temp_Pi=0.0;
+        double Vx, Vy;
+        double teta = 38.5;
 
     	int no_of_buckets = ElemTable->get_no_of_buckets();
     	vector<HashEntryLine> &bucket = ElemTable->bucket;
@@ -858,16 +861,24 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     			Element* Curr_El = &(elenode_[bucket[ibuck].ndx[ielm]]);
 
     			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
-    				temp_Sgx += Curr_El->STs(0)*Curr_El->dx(0)*Curr_El->dx(1);
-    				temp_Sgy += Curr_El->STs(NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
-    				temp_Sbx += Curr_El->STs(1)*Curr_El->dx(0)*Curr_El->dx(1);
-    				temp_Sby += Curr_El->STs(1 + NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
-    				temp_Six += Curr_El->STs(2)*Curr_El->dx(0)*Curr_El->dx(1);
-    				temp_Siy += Curr_El->STs(2 + NUM_STATE_VARS)*Curr_El->dx(0)*Curr_El->dx(1);
+
+    				Vx = Curr_El->state_vars(1)/Curr_El->state_vars(0);
+    				Vy = Curr_El->state_vars(2)/Curr_El->state_vars(0);
+    				temp_Fdx += Curr_El->STs(0);
+    				temp_Fdy += Curr_El->STs(NUM_STATE_VARS);
+    				temp_Fbx += Curr_El->STs(1);
+    				temp_Fby += Curr_El->STs(1 + NUM_STATE_VARS);
+    				temp_Fix += Curr_El->STs(2);
+    				temp_Fiy += Curr_El->STs(2 + NUM_STATE_VARS);
+
+    				temp_Pd += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
+    				temp_Pb += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
+    				temp_Pi += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
+
     				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
 
     				if (Curr_El->coord(0) < 0.0)
-    					XX.push_back(Curr_El->coord(0)*scale_.length/cos(38.5*PI/180.0));
+    					XX.push_back(Curr_El->coord(0)*scale_.length/cos(teta*PI/180.0));
     				else
     					XX.push_back(Curr_El->coord(0)*scale_.length);
     				YY.push_back(Curr_El->coord(1)*scale_.length);
@@ -888,16 +899,20 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     	X_el.push_back(fabs(X_max - X_min));
     	Y_el.push_back(fabs(Y_max - Y_min));
 
-        SSgx.push_back(temp_Sgx/temp_A);
-        SSgy.push_back(temp_Sgy/temp_A);
-        SSbx.push_back(temp_Sbx/temp_A);
-        SSby.push_back(temp_Sby/temp_A);
-        SSix.push_back(temp_Six/temp_A);
-        SSiy.push_back(temp_Siy/temp_A);
+        Fdx.push_back(temp_Fdx);
+        Fdy.push_back(temp_Fdy);
+        Fbx.push_back(temp_Fbx);
+        Fby.push_back(temp_Fby);
+        Fix.push_back(temp_Fix);
+        Fiy.push_back(temp_Fiy);
 
-
+        Pdriv.push_back(temp_Pd);
+        Edriv.push_back(temp_Pd*timeprops.dtime);
+        Pbed.push_back(temp_Pb);
+        Ebed.push_back(temp_Pb*timeprops.dtime);
+        Pint.push_back(temp_Pi);
+        Eint.push_back(temp_Pi*timeprops.dtime);
     }
-
 
 }
 
@@ -1242,6 +1257,10 @@ void cxxTitanSimulation::run(bool start_from_restart)
     	}
 
     }
+    double density = 802.73;
+    double F_SCALE = density * scale_.gravity * scale_.height * scale_.length * scale_.length;
+    double P_SCALE = F_SCALE * sqrt(scale_.gravity * scale_.length);
+    double E_SCALE = P_SCALE * timeprops.TIME_SCALE;
 
     FILE *fp;
     fp = fopen("elements.dat","w");
@@ -1250,16 +1269,28 @@ void cxxTitanSimulation::run(bool start_from_restart)
     fclose(fp);
 
     FILE *fp1;
-    fp1 = fopen("STs.dat","w");
-    for(i = 0; i < SSgx.size(); i++)
-    	fprintf(fp,"%e,%e,%e,%e,%e,%e\n", SSgx[i], SSgy[i], SSbx[i], SSby[i], SSix[i], SSiy[i]);
+    fp1 = fopen("Forces.dat","w");
+    for(i = 0; i < Fdx.size(); i++)
+    	fprintf(fp,"%e,%e,%e,%e,%e,%e\n", Fdx[i], Fdy[i], Fbx[i], Fby[i], Fix[i], Fiy[i]);
     fclose(fp1);
 
     FILE *fp2;
-    fp2 = fopen("Extents.dat","w");
+    fp2 = fopen("Powers.dat","w");
+    for(i = 0; i < Pdriv.size(); i++)
+    	fprintf(fp,"%e,%e,%e\n", Pdriv[i], Pbed[i], Pint[i]);
+    fclose(fp2);
+
+    FILE *fp3;
+    fp3 = fopen("Energies.dat","w");
+    for(i = 0; i < Edriv.size(); i++)
+    	fprintf(fp,"%e,%e,%e\n", Edriv[i], Ebed[i], Eint[i]);
+    fclose(fp3);
+
+    FILE *fp4;
+    fp4 = fopen("Extents.dat","w");
     for(i = 0; i < X_el.size(); i++)
     	fprintf(fp,"%e,%e\n", X_el[i], Y_el[i]);
-    fclose(fp2);
+    fclose(fp4);
 
     move_data(numprocs, myid, ElemTable, NodeTable, &timeprops);
     PROFILING1_STOP(tsim_iter,pt_start0);

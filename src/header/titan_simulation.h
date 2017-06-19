@@ -162,12 +162,20 @@ protected:
 
     std::vector<double> N_elements;
     std::vector<double> Time_el;
-    std::vector<double> SSgx;
-    std::vector<double> SSgy;
-    std::vector<double> SSbx;
-    std::vector<double> SSby;
-    std::vector<double> SSix;
-    std::vector<double> SSiy;
+    std::vector<double> Fdx;
+    std::vector<double> Fdy;
+    std::vector<double> Fbx;
+    std::vector<double> Fby;
+    std::vector<double> Fix;
+    std::vector<double> Fiy;
+
+    std::vector<double> Pdriv;
+    std::vector<double> Pbed;
+    std::vector<double> Pint;
+
+    std::vector<double> Edriv;
+    std::vector<double> Ebed;
+    std::vector<double> Eint;
 
     std::vector<double> XX;
     std::vector<double> YY;

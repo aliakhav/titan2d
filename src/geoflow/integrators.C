@@ -801,6 +801,10 @@ void Integrator_SinglePhase_Coulomb::corrector()
             }
 #endif
 
+            S_gx[ndx] = (forcegrav+Ustore[1]/dt)*dxdy;
+            S_bedx[ndx] = forcebedx*dxdy;
+            S_intx[ndx] = forceintx*dxdy;
+
             Ustore[1] = Ustore[1] + dt * (forcegrav - forcebedx - forceintx);
             //STOPPING CRITERIA
             if(stopping_criteria==1)
@@ -843,6 +847,11 @@ void Integrator_SinglePhase_Coulomb::corrector()
                 //    else
             }
 #endif
+
+            S_gy[ndx] = (forcegrav+Ustore[2]/dt)*dxdy;
+            S_bedy[ndx] = forcebedy*dxdy;
+            S_inty[ndx] = forceinty*dxdy;
+
             Ustore[2] = Ustore[2] + dt * (forcegrav - forcebedy - forceinty);
             //STOPPING CRITERIA
             if(stopping_criteria==1)
@@ -910,14 +919,6 @@ void Integrator_SinglePhase_Coulomb::corrector()
 
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        S_gx[ndx] = g[0][ndx] * h[ndx];
-        S_bedx[ndx] = forcebedx;
-        S_intx[ndx] = forceintx;
-
-        S_gy[ndx] = g[1][ndx] * h[ndx];
-        S_bedy[ndx] = forcebedy;
-        S_inty[ndx] = forceinty;
 
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);
@@ -1160,6 +1161,10 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             //the Turbulent type force for fast moving flow in x direction
             forceintx = unitvx * speed_squared * inv_xi / scale_.epsilon;
 
+            S_gx[ndx] = (forcegravx+Ustore[1]/dt)*dxdy;
+            S_bedx[ndx] = forcebedx*dxdy;
+            S_intx[ndx] = forceintx*dxdy;
+
             //STOPPING CRITERIA
             inertial_x = fabs( Ustore[1] + dt * forcegravx );
 
@@ -1182,15 +1187,19 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             // the Turbulent type force for fast moving flow in y direction
             forceinty = unitvy * speed_squared * inv_xi / scale_.epsilon;
 
-	    //STOPPING CRITERIA
-	    inertial_y = fabs( Ustore[2] + dt * forcegravy );
+            S_gy[ndx] = (forcegravy+Ustore[2]/dt)*dxdy;
+            S_bedy[ndx] = forcebedy*dxdy;
+            S_inty[ndx] = forceinty*dxdy;
 
-	    drag_y = fabs( dt * ( forceinty + forcebedy ) );
+            //STOPPING CRITERIA
+            inertial_y = fabs( Ustore[2] + dt * forcegravy );
 
-	    if ( inertial_y > drag_y )
+            drag_y = fabs( dt * ( forceinty + forcebedy ) );
+
+            if ( inertial_y > drag_y )
             	Ustore[2] = Ustore[2] + dt * (forcegravy - forcebedy - forceinty);
-	    else
-		Ustore[2] = 0.0;
+            else
+            	Ustore[2] = 0.0;
 
         }
 
@@ -1221,14 +1230,6 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
 
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        S_gx[ndx] = g[0][ndx] * h[ndx];
-        S_bedx[ndx] = forcebedx;
-        S_intx[ndx] = forceintx;
-
-        S_gy[ndx] = g[1][ndx] * h[ndx];
-        S_bedy[ndx] = forcebedy;
-        S_inty[ndx] = forceinty;
 
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);
@@ -1509,6 +1510,10 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
 			forceintx = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
 
+            S_gx[ndx] = (forcegravx+Ustore[1]/dt)*dxdy;
+            S_bedx[ndx] = forcebedx*dxdy;
+            S_intx[ndx] = forceintx*dxdy;
+
 			//STOPPING CRITERIA
 			inertial_x = fabs( Ustore[1] + dt * forcegravx );
 
@@ -1531,6 +1536,10 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 			forcebedy = unitvy * mu_bed * c_dmax1(g[2][ndx] * h[ndx] + VxVy[1] * hVy[ndx] * curvature_[1][ndx], 0.0);
 
 			forceinty = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
+
+            S_gy[ndx] = (forcegravy+Ustore[2]/dt)*dxdy;
+            S_bedy[ndx] = forcebedy*dxdy;
+            S_inty[ndx] = forceinty*dxdy;
 
 			//STOPPING CRITERIA
 			inertial_y = fabs( Ustore[2] + dt * forcegravy );
@@ -1570,14 +1579,6 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
         elements_[ndx].calc_shortspeed(1.0 / dt);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        S_gx[ndx] = g[0][ndx] * h[ndx];
-        S_bedx[ndx] = forcebedx;
-        S_intx[ndx] = forceintx;
-
-        S_gy[ndx] = g[1][ndx] * h[ndx];
-        S_bedy[ndx] = forcebedy;
-        S_inty[ndx] = forceinty;
 
         m_forceint += fabs(elem_forceint);
         m_forcebed += fabs(elem_forcebed);
