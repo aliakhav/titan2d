@@ -864,24 +864,48 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
 
     				Vx = Curr_El->state_vars(1)/Curr_El->state_vars(0);
     				Vy = Curr_El->state_vars(2)/Curr_El->state_vars(0);
-    				temp_Fdx += Curr_El->STs(0);
-    				temp_Fdy += Curr_El->STs(NUM_STATE_VARS);
-    				temp_Fbx += Curr_El->STs(1);
-    				temp_Fby += Curr_El->STs(1 + NUM_STATE_VARS);
-    				temp_Fix += Curr_El->STs(2);
-    				temp_Fiy += Curr_El->STs(2 + NUM_STATE_VARS);
 
-    				temp_Pd += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
-    				temp_Pb += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
-    				temp_Pi += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
+    				if (Curr_El->coord(1) > 0.0)
+    				{
+        				temp_Fdx += Curr_El->STs(0);
+        				temp_Fdy += Curr_El->STs(NUM_STATE_VARS);
+        				temp_Fbx += Curr_El->STs(1);
+        				temp_Fby += Curr_El->STs(1 + NUM_STATE_VARS);
+        				temp_Fix += Curr_El->STs(2);
+        				temp_Fiy += Curr_El->STs(2 + NUM_STATE_VARS);
 
-    				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
+        				temp_Pd += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
+        				temp_Pb += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
+        				temp_Pi += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
+
+        				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
+
+
+    				}
+
+    				if (Curr_El->coord(1) == 0.0)
+    				{
+        				temp_Fdx += 0.5*Curr_El->STs(0);
+        				temp_Fdy += 0.5*Curr_El->STs(NUM_STATE_VARS);
+        				temp_Fbx += 0.5*Curr_El->STs(1);
+        				temp_Fby += 0.5*Curr_El->STs(1 + NUM_STATE_VARS);
+        				temp_Fix += 0.5*Curr_El->STs(2);
+        				temp_Fiy += 0.5*Curr_El->STs(2 + NUM_STATE_VARS);
+
+        				temp_Pd += 0.5*Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
+        				temp_Pb += 0.5*Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
+        				temp_Pi += 0.5*Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
+
+        				temp_A += 0.5*Curr_El->dx(0)*Curr_El->dx(1);
+    				}
+
 
     				if (Curr_El->coord(0) < 0.0)
     					XX.push_back(Curr_El->coord(0)*scale_.length/cos(teta*PI/180.0));
     				else
     					XX.push_back(Curr_El->coord(0)*scale_.length);
     				YY.push_back(Curr_El->coord(1)*scale_.length);
+
     			}
     		}
     	}
