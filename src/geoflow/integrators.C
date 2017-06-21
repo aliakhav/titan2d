@@ -296,6 +296,10 @@ Integrator_SinglePhase::Integrator_SinglePhase(cxxTitanSimulation *_titanSimulat
         h(state_vars_[0]),
         hVx(state_vars_[1]),
         hVy(state_vars_[2]),
+	    S_inertx(Drivs_[0]),
+		S_inerty(Drivs_[2]),
+	    S_convx(Drivs_[1]),
+		S_convy(Drivs_[3]),
 		S_gx(STs_[0]),
 		S_gy(STs_[NUM_STATE_VARS]),
 		S_bedx(STs_[1]),
@@ -801,9 +805,10 @@ void Integrator_SinglePhase_Coulomb::corrector()
             }
 #endif
 
-            S_gx[ndx] = (forcegrav+Ustore[1]/dt)*dxdy;
-            S_bedx[ndx] = forcebedx*dxdy;
-            S_intx[ndx] = forceintx*dxdy;
+            S_convx[ndx] = (fluxxp[1] - fluxxm[1])*dx_[1][ndx] + (fluxyp[1] - fluxym[1])*dx_[0][ndx];
+            S_gx[ndx] = forcegrav*dxdy;
+            S_bedx[ndx] = -forcebedx*dxdy;
+            S_intx[ndx] = -forceintx*dxdy;
 
             Ustore[1] = Ustore[1] + dt * (forcegrav - forcebedx - forceintx);
             //STOPPING CRITERIA
@@ -848,9 +853,10 @@ void Integrator_SinglePhase_Coulomb::corrector()
             }
 #endif
 
-            S_gy[ndx] = (forcegrav+Ustore[2]/dt)*dxdy;
-            S_bedy[ndx] = forcebedy*dxdy;
-            S_inty[ndx] = forceinty*dxdy;
+            S_convy[ndx] = (fluxxp[2] - fluxxm[2])*dx_[1][ndx] + (fluxyp[2] - fluxym[2])*dx_[0][ndx];
+            S_gy[ndx] = forcegrav*dxdy;
+            S_bedy[ndx] = -forcebedy*dxdy;
+            S_inty[ndx] = -forceinty*dxdy;
 
             Ustore[2] = Ustore[2] + dt * (forcegrav - forcebedy - forceinty);
             //STOPPING CRITERIA
@@ -901,6 +907,9 @@ void Integrator_SinglePhase_Coulomb::corrector()
         h[ndx]=Ustore[0];
         hVx[ndx]=Ustore[1];
         hVy[ndx]=Ustore[2];
+
+        S_inertx[ndx] = dxdy*(hVx[ndx] - prev_state_vars_[1][ndx])/dt;
+        S_inerty[ndx] = dxdy*(hVy[ndx] - prev_state_vars_[2][ndx])/dt;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1161,9 +1170,10 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             //the Turbulent type force for fast moving flow in x direction
             forceintx = unitvx * speed_squared * inv_xi / scale_.epsilon;
 
-            S_gx[ndx] = (forcegravx+Ustore[1]/dt)*dxdy;
-            S_bedx[ndx] = forcebedx*dxdy;
-            S_intx[ndx] = forceintx*dxdy;
+            S_convx[ndx] = (fluxxp[1] - fluxxm[1])*dx_[1][ndx] + (fluxyp[1] - fluxym[1])*dx_[0][ndx];
+            S_gx[ndx] = forcegravx*dxdy;
+            S_bedx[ndx] = -forcebedx*dxdy;
+            S_intx[ndx] = -forceintx*dxdy;
 
             //STOPPING CRITERIA
             inertial_x = fabs( Ustore[1] + dt * forcegravx );
@@ -1187,9 +1197,10 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             // the Turbulent type force for fast moving flow in y direction
             forceinty = unitvy * speed_squared * inv_xi / scale_.epsilon;
 
-            S_gy[ndx] = (forcegravy+Ustore[2]/dt)*dxdy;
-            S_bedy[ndx] = forcebedy*dxdy;
-            S_inty[ndx] = forceinty*dxdy;
+            S_convy[ndx] = (fluxxp[2] - fluxxm[2])*dx_[1][ndx] + (fluxyp[2] - fluxym[2])*dx_[0][ndx];
+            S_gy[ndx] = forcegravy*dxdy;
+            S_bedy[ndx] = -forcebedy*dxdy;
+            S_inty[ndx] = -forceinty*dxdy;
 
             //STOPPING CRITERIA
             inertial_y = fabs( Ustore[2] + dt * forcegravy );
@@ -1200,7 +1211,6 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
             	Ustore[2] = Ustore[2] + dt * (forcegravy - forcebedy - forceinty);
             else
             	Ustore[2] = 0.0;
-
         }
 
         // computation of magnitude of friction forces for statistics
@@ -1211,6 +1221,9 @@ void Integrator_SinglePhase_Voellmy_Salm::corrector()
         h[ndx]=Ustore[0];
         hVx[ndx]=Ustore[1];
         hVy[ndx]=Ustore[2];
+
+        S_inertx[ndx] = dxdy*(hVx[ndx] - prev_state_vars_[1][ndx])/dt;
+        S_inerty[ndx] = dxdy*(hVy[ndx] - prev_state_vars_[2][ndx])/dt;
 
         //end of correct
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1510,9 +1523,10 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
 			forceintx = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dx[ndx];
 
-            S_gx[ndx] = (forcegravx+Ustore[1]/dt)*dxdy;
-            S_bedx[ndx] = forcebedx*dxdy;
-            S_intx[ndx] = forceintx*dxdy;
+			S_convx[ndx] = (fluxxp[1] - fluxxm[1])*dx_[1][ndx] + (fluxyp[1] - fluxym[1])*dx_[0][ndx];
+            S_gx[ndx] = forcegravx*dxdy;
+            S_bedx[ndx] = -forcebedx*dxdy;
+            S_intx[ndx] = -forceintx*dxdy;
 
 			//STOPPING CRITERIA
 			inertial_x = fabs( Ustore[1] + dt * forcegravx );
@@ -1537,9 +1551,10 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
 
 			forceinty = h[ndx] * g[2][ndx] * kactxy[ndx] * dh_dy[ndx];
 
-            S_gy[ndx] = (forcegravy+Ustore[2]/dt)*dxdy;
-            S_bedy[ndx] = forcebedy*dxdy;
-            S_inty[ndx] = forceinty*dxdy;
+			S_convy[ndx] = (fluxxp[2] - fluxxm[2])*dx_[1][ndx] + (fluxyp[2] - fluxym[2])*dx_[0][ndx];
+            S_gy[ndx] = forcegravy*dxdy;
+            S_bedy[ndx] = -forcebedy*dxdy;
+            S_inty[ndx] = -forceinty*dxdy;
 
 			//STOPPING CRITERIA
 			inertial_y = fabs( Ustore[2] + dt * forcegravy );
@@ -1561,6 +1576,9 @@ void Integrator_SinglePhase_Pouliquen_Forterre::corrector()
         h[ndx]=Ustore[0];
         hVx[ndx]=Ustore[1];
         hVy[ndx]=Ustore[2];
+
+        S_inertx[ndx] = dxdy*(hVx[ndx] - prev_state_vars_[1][ndx])/dt;
+        S_inerty[ndx] = dxdy*(hVy[ndx] - prev_state_vars_[2][ndx])/dt;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -162,25 +162,51 @@ protected:
 
     std::vector<double> N_elements;
     std::vector<double> Time_el;
-    std::vector<double> Fdx;
-    std::vector<double> Fdy;
+    std::vector<double> Area;
+    std::vector<double> Finertx;
+    std::vector<double> Finerty;
+    std::vector<double> Fconvx;
+    std::vector<double> Fconvy;
+    std::vector<double> Fgravx;
+    std::vector<double> Fgravy;
     std::vector<double> Fbx;
     std::vector<double> Fby;
     std::vector<double> Fix;
     std::vector<double> Fiy;
 
-    std::vector<double> Pdriv;
+    std::vector<double> Pinert;
+    std::vector<double> Pconv;
+    std::vector<double> Pgrav;
     std::vector<double> Pbed;
     std::vector<double> Pint;
 
-    std::vector<double> Edriv;
-    std::vector<double> Ebed;
-    std::vector<double> Eint;
+    std::vector<double> FVinert;
+    std::vector<double> FVconv;
+    std::vector<double> FVgrav;
+    std::vector<double> FVbed;
+    std::vector<double> FVint;
 
     std::vector<double> XX;
     std::vector<double> YY;
     std::vector<double> X_el;
     std::vector<double> Y_el;
+
+    double T_Finertx;
+    double T_Finerty;
+    double T_Fconvx;
+    double T_Fconvy;
+    double T_Fgravx;
+    double T_Fgravy;
+    double T_Fbx;
+    double T_Fby;
+    double T_Fix;
+    double T_Fiy;
+
+    double T_Pinert;
+    double T_Pconv;
+    double T_Pgrav;
+    double T_Pbed;
+    double T_Pint;
 
 };
 

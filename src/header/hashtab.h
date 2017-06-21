@@ -658,6 +658,8 @@ public:
     ElementsProperties *ElemProp;
 
     tivector<double> STs_[MAX_NUM_STATE_VARS];
+
+    tivector<double> Drivs_[4];
 };
 
 
@@ -705,6 +707,7 @@ public:
     tivector<int> &material_;
     tivector<int> &myprocess_;
     tivector<double> *STs_;
+    tivector<double> *Drivs_;
 
     tivector<int> &which_son_;
     tivector<int> &opposite_brother_flag_;

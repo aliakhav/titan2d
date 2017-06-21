@@ -534,7 +534,8 @@ public:
 
     double STs(int idim) const ;
     void STs(int idim, double value);
-
+    double Drivs(int idim) const ;
+    void Drivs(int idim, double value);
     
 
     //! this function is titan legacy code it is defined in Element2.C but is not called anywhere
