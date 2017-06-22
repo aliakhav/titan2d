@@ -893,11 +893,14 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
         				temp_P[3] += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
         				temp_P[4] += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
 
-        				temp_FV[0] += temp_P[0] / Vm;
-        				temp_FV[1] += temp_P[1] / Vm;
-        				temp_FV[2] += temp_P[2] / Vm;
-        				temp_FV[3] += temp_P[3] / Vm;
-        				temp_FV[4] += temp_P[4] / Vm;
+        				if (Vm > 0.0)
+        				{
+            				temp_FV[0] += temp_P[0] / Vm;
+            				temp_FV[1] += temp_P[1] / Vm;
+            				temp_FV[2] += temp_P[2] / Vm;
+            				temp_FV[3] += temp_P[3] / Vm;
+            				temp_FV[4] += temp_P[4] / Vm;
+        				}
 
         				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
     				}
@@ -921,11 +924,15 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
         				temp_P[3] += 0.5*(Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy);
         				temp_P[4] += 0.5*(Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy);
 
-        				temp_FV[0] += 0.5*temp_P[0] / Vm;
-        				temp_FV[1] += 0.5*temp_P[1] / Vm;
-        				temp_FV[2] += 0.5*temp_P[2] / Vm;
-        				temp_FV[3] += 0.5*temp_P[3] / Vm;
-        				temp_FV[4] += 0.5*temp_P[4] / Vm;
+        				if (Vm > 0.0)
+        				{
+            				temp_FV[0] += 0.5*temp_P[0] / Vm;
+            				temp_FV[1] += 0.5*temp_P[1] / Vm;
+            				temp_FV[2] += 0.5*temp_P[2] / Vm;
+            				temp_FV[3] += 0.5*temp_P[3] / Vm;
+            				temp_FV[4] += 0.5*temp_P[4] / Vm;
+        				}
+
 
         				temp_A += 0.5*Curr_El->dx(0)*Curr_El->dx(1);
     				}
