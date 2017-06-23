@@ -19,7 +19,7 @@
 
 #include <string>
 #include <vector>
-#include <algorithm>
+//#include <algorithm>
 
 #include "hd5calls.h"
 
@@ -186,10 +186,10 @@ protected:
     std::vector<double> FVbed;
     std::vector<double> FVint;
 
-    std::vector<double> XX;
-    std::vector<double> YY;
-    std::vector<double> X_el;
-    std::vector<double> Y_el;
+//    std::vector<double> XX;
+//    std::vector<double> YY;
+//    std::vector<double> X_el;
+//    std::vector<double> Y_el;
 
     double T_Finertx;
     double T_Finerty;
