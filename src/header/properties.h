@@ -853,14 +853,6 @@ public:
     //! 2-d array holding the cummulative kinetic energy at every point
     double *cum_kinergy;
 
-    double *S_gx;
-    double *S_bedx;
-    double *S_intx;
-
-    double *S_gy;
-    double *S_bedy;
-    double *S_inty;
-
     ElementType elementType;
 
     //! do the calculations
@@ -898,9 +890,6 @@ public:
      */
     void output(MatProps* matprops_ptr, StatProps* statprops_ptr);
     
-    //! this function is for writing Source Terms components into output files
-//    void outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr);
-
     //! this function reads in the previous map of maximum throughout time pileheight stored in the file pileheightrecord.xxxxxx during restart
     void reload(MatProps* matprops_ptr, StatProps* statprops_ptr);
     
@@ -946,19 +935,6 @@ protected:
     double **cum_kinergy_loc;
     vector<double, AlignmentAllocator<double> > cum_kinergy_by_elm;
 
-//    double **S_gx_loc;
-//    double **S_gy_loc;
-//    double **S_bedx_loc;
-//    double **S_bedy_loc;
-//    double **S_intx_loc;
-//    double **S_inty_loc;
-//
-//    vector<double, AlignmentAllocator<double> > S_gx_by_elm;
-//    vector<double, AlignmentAllocator<double> > S_gy_by_elm;
-//    vector<double, AlignmentAllocator<double> > S_bedx_by_elm;
-//    vector<double, AlignmentAllocator<double> > S_bedy_by_elm;
-//    vector<double, AlignmentAllocator<double> > S_intx_by_elm;
-//    vector<double, AlignmentAllocator<double> > S_inty_by_elm;
 
 
     vector<int> el_x_start;

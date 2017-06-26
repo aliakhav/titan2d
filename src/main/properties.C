@@ -652,24 +652,10 @@ OutLine::OutLine()
     max_dynamic_pressure=nullptr;
     cum_kinergy=nullptr;
 
-//    S_gx=nullptr;
-//    S_bedx=nullptr;
-//    S_intx=nullptr;
-//    S_gy=nullptr;
-//    S_bedy=nullptr;
-//    S_inty=nullptr;
-
     pileheight_loc=nullptr;
     max_kinergy_loc=nullptr;
     max_dynamic_pressure_loc=nullptr;
     cum_kinergy_loc=nullptr;
-
-//    S_gx_loc=nullptr;
-//    S_bedx_loc=nullptr;
-//    S_intx_loc=nullptr;
-//    S_gy_loc=nullptr;
-//    S_bedy_loc=nullptr;
-//    S_inty_loc=nullptr;
 
     elementType=ElementType::SinglePhase;
 
@@ -691,14 +677,6 @@ OutLine::~OutLine()
     TI_FREE(pileheight);
     TI_FREE(max_kinergy);
     TI_FREE(cum_kinergy);
-
-//    TI_FREE(S_gx);
-//    TI_FREE(S_bedx);
-//    TI_FREE(S_intx);
-//    TI_FREE(S_gy);
-//    TI_FREE(S_bedy);
-//    TI_FREE(S_inty);
-
     if (pileheight_loc != nullptr)
     {
         for (int j = 0; j < threads_number; j++)
@@ -733,60 +711,6 @@ OutLine::~OutLine()
         }
     }
     TI_FREE(cum_kinergy_loc);
-
-//    if (S_gx_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_gx_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_gx_loc);
-//
-//    if (S_gy_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_gy_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_gy_loc);
-//
-//    if (S_bedx_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_bedx_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_bedx_loc);
-//
-//    if (S_bedy_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_bedy_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_bedy_loc);
-//
-//    if (S_intx_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_intx_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_intx_loc);
-//
-//    if (S_inty_loc != nullptr)
-//    {
-//        for (int j = 0; j < threads_number; j++)
-//        {
-//            TI_FREE(S_inty_loc[j]);
-//        }
-//    }
-//    TI_FREE(S_inty_loc);
     return;
 }
 void OutLine::setElemNodeTable(ElementsHashTable* _ElemTable, NodeHashTable* _NodeTable)
@@ -867,7 +791,7 @@ void OutLine::init_DEM_resolution(double resx, double resy, double *XRange, doub
     stride=Nx;
     if(myid==0 && enabled)
     {
-        printf("Outline init: Nx=%d Ny=%d dx=%.5g dy=%.5g\n", Nx, Ny, dx*scale->length, dy*scale->length);
+//        printf("Outline init: Nx=%d Ny=%d dx=%.5g dy=%.5g\n", Nx, Ny, dx*scale->length, dy*scale->length);
         printf("Outline init: temporary arrays for %d threads\n", threads_number);
     }
 
@@ -883,24 +807,10 @@ void OutLine::alloc_arrays()
     max_dynamic_pressure = TI_ALLOC(double, size);
     cum_kinergy = TI_ALLOC(double, size);
 
-//    S_gx = TI_ALLOC(double, size);
-//    S_bedx = TI_ALLOC(double, size);
-//    S_intx = TI_ALLOC(double, size);
-//    S_gy = TI_ALLOC(double, size);
-//    S_bedy = TI_ALLOC(double, size);
-//    S_inty = TI_ALLOC(double, size);
-
     pileheight_loc = TI_ALLOC(double*, threads_number);
     max_kinergy_loc = TI_ALLOC(double*, threads_number);
     max_dynamic_pressure_loc = TI_ALLOC(double*, threads_number);
     cum_kinergy_loc = TI_ALLOC(double*, threads_number);
-
-//    S_gx_loc = TI_ALLOC(double*, threads_number);
-//    S_bedx_loc = TI_ALLOC(double*, threads_number);
-//    S_intx_loc = TI_ALLOC(double*, threads_number);
-//    S_gy_loc = TI_ALLOC(double*, threads_number);
-//    S_bedy_loc = TI_ALLOC(double*, threads_number);
-//    S_inty_loc = TI_ALLOC(double*, threads_number);
 
 
     for(int j = 0; j < threads_number; j++)
@@ -910,26 +820,12 @@ void OutLine::alloc_arrays()
         max_dynamic_pressure_loc[j] = TI_ALLOC(double, size);
         cum_kinergy_loc[j] = TI_ALLOC(double, size);
 
-//        S_gx_loc[j] = TI_ALLOC(double, size);
-//        S_bedx_loc[j] = TI_ALLOC(double, size);
-//        S_intx_loc[j] = TI_ALLOC(double, size);
-//        S_gy_loc[j] = TI_ALLOC(double, size);
-//        S_bedy_loc[j] = TI_ALLOC(double, size);
-//        S_inty_loc[j] = TI_ALLOC(double, size);
-
         for(int i = 0; i < size; i++)
         {
             pileheight_loc[j][i] = 0.0;
             max_kinergy_loc[j][i] = 0.0;
             max_dynamic_pressure_loc[j][i] = 0.0;
             cum_kinergy_loc[j][i] = 0.0;
-
-//            S_gx_loc[j][i] = 0.0;
-//            S_bedx_loc[j][i] = 0.0;
-//            S_intx_loc[j][i] = 0.0;
-//            S_gy_loc[j][i] = 0.0;
-//            S_bedy_loc[j][i] = 0.0;
-//            S_inty_loc[j][i] = 0.0;
         }
     }
 
@@ -940,13 +836,6 @@ void OutLine::alloc_arrays()
         max_kinergy[i] = 0.0;
         max_dynamic_pressure[i] = 0.0;
         cum_kinergy[i] = 0.0;
-
-//        S_gx[i] = 0.0;
-//        S_bedx[i] = 0.0;
-//        S_intx[i] = 0.0;
-//        S_gy[i] = 0.0;
-//        S_bedy[i] = 0.0;
-//        S_inty[i] = 0.0;
     }
     return;
 }
@@ -974,26 +863,12 @@ void OutLine::init2(const double *dxy, double *XRange, double *YRange)
     max_dynamic_pressure = TI_ALLOC(double, size);
     cum_kinergy = TI_ALLOC(double, size);
 
-//    S_gx = TI_ALLOC(double, size);
-//    S_bedx = TI_ALLOC(double, size);
-//    S_intx = TI_ALLOC(double, size);
-//    S_gy = TI_ALLOC(double, size);
-//    S_bedy = TI_ALLOC(double, size);
-//    S_inty = TI_ALLOC(double, size);
-
     for(int i = 0; i < size; i++)
     {
         pileheight[i] = 0.0;
         max_kinergy[i] = 0.0;
         max_dynamic_pressure[i] = 0.0;
         cum_kinergy[i] = 0.0;
-
-//        S_gx[i] = 0.0;
-//        S_bedx[i] = 0.0;
-//        S_intx[i] = 0.0;
-//        S_gy[i] = 0.0;
-//        S_bedy[i] = 0.0;
-//        S_inty[i] = 0.0;
     }
     return;
 }
@@ -1058,35 +933,15 @@ void OutLine::update_on_changed_geometry()
     max_dynamic_pressure_by_elm.resize(N);
     cum_kinergy_by_elm.resize(N);
 
-//    S_gx_by_elm.resize(N);
-//    S_gy_by_elm.resize(N);
-//    S_bedx_by_elm.resize(N);
-//    S_bedy_by_elm.resize(N);
-//    S_intx_by_elm.resize(N);
-//    S_inty_by_elm.resize(N);
-
     double * RESTRICT m_pileheight_by_elm=&(pileheight_by_elm[0]);
     double * RESTRICT m_max_kinergy_by_elm=&(max_kinergy_by_elm[0]);
     double * RESTRICT m_max_dynamic_pressure_by_elm=&(max_dynamic_pressure_by_elm[0]);
     double * RESTRICT m_cum_kinergy_by_elm=&(cum_kinergy_by_elm[0]);
 
-//    double * RESTRICT m_S_gx_by_elm=&(S_gx_by_elm[0]);
-//    double * RESTRICT m_S_gy_by_elm=&(S_gy_by_elm[0]);
-//    double * RESTRICT m_S_bedx_by_elm=&(S_bedx_by_elm[0]);
-//    double * RESTRICT m_S_bedy_by_elm=&(S_bedy_by_elm[0]);
-//    double * RESTRICT m_S_intx_by_elm=&(S_intx_by_elm[0]);
-//    double * RESTRICT m_S_inty_by_elm=&(S_inty_by_elm[0]);
-
     TI_ASSUME_ALIGNED(m_pileheight_by_elm);
     TI_ASSUME_ALIGNED(m_max_kinergy_by_elm);
     TI_ASSUME_ALIGNED(m_cum_kinergy_by_elm);
 
-//    TI_ASSUME_ALIGNED(m_S_gx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_gy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_intx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_inty_by_elm);
 
     #pragma omp parallel
     {
@@ -1098,13 +953,6 @@ void OutLine::update_on_changed_geometry()
             m_max_kinergy_by_elm[ndx]=0.0;
             m_max_dynamic_pressure_by_elm[ndx]=0.0;
             m_cum_kinergy_by_elm[ndx]=0.0;
-
-//            m_S_gx_by_elm[ndx]=0.0;
-//            m_S_gy_by_elm[ndx]=0.0;
-//            m_S_bedx_by_elm[ndx]=0.0;
-//            m_S_bedy_by_elm[ndx]=0.0;
-//            m_S_intx_by_elm[ndx]=0.0;
-//            m_S_inty_by_elm[ndx]=0.0;
         }
 
         #pragma omp for schedule(dynamic,TITAN2D_DINAMIC_CHUNK)
@@ -1154,49 +1002,20 @@ void OutLine::update_single_phase()
     double * RESTRICT hVx=&(ElemTable->state_vars_[1][0]);
     double * RESTRICT hVy=&(ElemTable->state_vars_[2][0]);
 
-//    double * RESTRICT Sgx=&(ElemTable->STs_[0][0]);
-//    double * RESTRICT Sbx=&(ElemTable->STs_[1][0]);
-//    double * RESTRICT Six=&(ElemTable->STs_[2][0]);
-//    double * RESTRICT Sgy=&(ElemTable->STs_[NUM_STATE_VARS][0]);
-//    double * RESTRICT Sby=&(ElemTable->STs_[NUM_STATE_VARS+1][0]);
-//    double * RESTRICT Siy=&(ElemTable->STs_[NUM_STATE_VARS+2][0]);
-
-
-
     TI_ASSUME_ALIGNED(adapted_);
     TI_ASSUME_ALIGNED(h);
     TI_ASSUME_ALIGNED(hVx);
     TI_ASSUME_ALIGNED(hVy);
-//    TI_ASSUME_ALIGNED(Sgx);
-//    TI_ASSUME_ALIGNED(Sbx);
-//    TI_ASSUME_ALIGNED(Six);
-//    TI_ASSUME_ALIGNED(Sgy);
-//    TI_ASSUME_ALIGNED(Sby);
-//    TI_ASSUME_ALIGNED(Siy);
 
     double * RESTRICT m_pileheight_by_elm=&(pileheight_by_elm[0]);
     double * RESTRICT m_max_kinergy_by_elm=&(max_kinergy_by_elm[0]);
     double * RESTRICT m_max_dynamic_pressure_by_elm=&(max_dynamic_pressure_by_elm[0]);
     double * RESTRICT m_cum_kinergy_by_elm=&(cum_kinergy_by_elm[0]);
 
-//    double * RESTRICT m_S_gx_by_elm=&(S_gx_by_elm[0]);
-//    double * RESTRICT m_S_gy_by_elm=&(S_gy_by_elm[0]);
-//    double * RESTRICT m_S_bedx_by_elm=&(S_bedx_by_elm[0]);
-//    double * RESTRICT m_S_bedy_by_elm=&(S_bedy_by_elm[0]);
-//    double * RESTRICT m_S_intx_by_elm=&(S_intx_by_elm[0]);
-//    double * RESTRICT m_S_inty_by_elm=&(S_inty_by_elm[0]);
-
     TI_ASSUME_ALIGNED(m_pileheight_by_elm);
     TI_ASSUME_ALIGNED(m_max_kinergy_by_elm);
     TI_ASSUME_ALIGNED(m_max_dynamic_pressure_by_elm);
     TI_ASSUME_ALIGNED(m_cum_kinergy_by_elm);
-
-//    TI_ASSUME_ALIGNED(m_S_gx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_gy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_intx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_inty_by_elm);
 
     if(numprocs>1)
     {
@@ -1217,14 +1036,6 @@ void OutLine::update_single_phase()
             m_pileheight_by_elm[ndx] = max(m_pileheight_by_elm[ndx], h[ndx]);
             m_max_dynamic_pressure_by_elm[ndx] = max(m_max_dynamic_pressure_by_elm[ndx],dp);
             m_max_kinergy_by_elm[ndx] = max(m_max_kinergy_by_elm[ndx],ke);
-
-//            m_S_gx_by_elm[ndx] = Sgx[ndx];
-//            m_S_bedx_by_elm[ndx] = Sbx[ndx];
-//            m_S_intx_by_elm[ndx] = Six[ndx];
-//            m_S_gy_by_elm[ndx] = Sgy[ndx];
-//            m_S_bedy_by_elm[ndx] = Sby[ndx];
-//            m_S_inty_by_elm[ndx] = Siy[ndx];
-
         }
     }
     else
@@ -1244,13 +1055,6 @@ void OutLine::update_single_phase()
             m_pileheight_by_elm[ndx] = max(m_pileheight_by_elm[ndx], h[ndx]);
             m_max_dynamic_pressure_by_elm[ndx] = max(m_max_dynamic_pressure_by_elm[ndx],dp);
             m_max_kinergy_by_elm[ndx] = max(m_max_kinergy_by_elm[ndx],ke);
-
-//            m_S_gx_by_elm[ndx] = Sgx[ndx];
-//            m_S_bedx_by_elm[ndx] = Sbx[ndx];
-//            m_S_intx_by_elm[ndx] = Six[ndx];
-//            m_S_gy_by_elm[ndx] = Sgy[ndx];
-//            m_S_bedy_by_elm[ndx] = Sby[ndx];
-//            m_S_inty_by_elm[ndx] = Siy[ndx];
         }
     }
 }
@@ -1264,24 +1068,10 @@ void OutLine::flush_stats(bool zero_old_arrays)
     double * RESTRICT m_max_dynamic_pressure_by_elm=&(max_kinergy_by_elm[0]);
     double * RESTRICT m_cum_kinergy_by_elm=&(cum_kinergy_by_elm[0]);
 
-//    double * RESTRICT m_S_gx_by_elm=&(S_gx_by_elm[0]);
-//    double * RESTRICT m_S_gy_by_elm=&(S_gy_by_elm[0]);
-//    double * RESTRICT m_S_bedx_by_elm=&(S_bedx_by_elm[0]);
-//    double * RESTRICT m_S_bedy_by_elm=&(S_bedy_by_elm[0]);
-//    double * RESTRICT m_S_intx_by_elm=&(S_intx_by_elm[0]);
-//    double * RESTRICT m_S_inty_by_elm=&(S_inty_by_elm[0]);
-
     TI_ASSUME_ALIGNED(m_pileheight_by_elm);
     TI_ASSUME_ALIGNED(m_max_kinergy_by_elm);
     TI_ASSUME_ALIGNED(m_max_dynamic_pressure_by_elm);
     TI_ASSUME_ALIGNED(m_cum_kinergy_by_elm);
-
-//    TI_ASSUME_ALIGNED(m_S_gx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_gy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_bedy_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_intx_by_elm);
-//    TI_ASSUME_ALIGNED(m_S_inty_by_elm);
 
     int * RESTRICT ix_start=&(el_x_start[0]);
     int * RESTRICT ix_stop=&(el_x_stop[0]);
@@ -1295,13 +1085,6 @@ void OutLine::flush_stats(bool zero_old_arrays)
         double *m_max_kinergy=max_kinergy_loc[ithread];
         double *m_max_dynamic_pressure=max_dynamic_pressure_loc[ithread];
         double *m_cum_kinergy=cum_kinergy_loc[ithread];
-
-//        double *m_S_gx=S_gx_loc[ithread];
-//        double *m_S_gy=S_gy_loc[ithread];;
-//        double *m_S_bedx=S_bedx_loc[ithread];
-//        double *m_S_bedy=S_bedy_loc[ithread];
-//        double *m_S_intx=S_intx_loc[ithread];
-//        double *m_S_inty=S_inty_loc[ithread];
 
         #pragma omp for schedule(dynamic,TITAN2D_DINAMIC_CHUNK)
         for(ti_ndx_t ndx = 0; ndx < N; ndx++)
@@ -1317,14 +1100,6 @@ void OutLine::flush_stats(bool zero_old_arrays)
                         m_max_kinergy[iy*stride+ix] = m_max_kinergy_by_elm[ndx];
                     if( m_max_dynamic_pressure_by_elm[ndx]> m_max_dynamic_pressure[iy*stride+ix])
                         m_max_dynamic_pressure[iy*stride+ix] = m_max_dynamic_pressure_by_elm[ndx];
-
-//                    m_S_gx[iy*stride+ix] = m_S_gx_by_elm[ndx];
-//                    m_S_bedx[iy*stride+ix] = m_S_bedx_by_elm[ndx];
-//                    m_S_intx[iy*stride+ix] = m_S_intx_by_elm[ndx];
-//
-//                    m_S_gy[iy*stride+ix] = m_S_gy_by_elm[ndx];
-//                    m_S_bedy[iy*stride+ix] = m_S_bedy_by_elm[ndx];
-//                    m_S_inty[iy*stride+ix] = m_S_inty_by_elm[ndx];
                 }
             }
         }
@@ -1337,13 +1112,6 @@ void OutLine::flush_stats(bool zero_old_arrays)
                 m_max_kinergy_by_elm[ndx]=0.0;
                 m_max_dynamic_pressure_by_elm[ndx]=0.0;
                 m_cum_kinergy_by_elm[ndx]=0.0;
-
-//                m_S_gx_by_elm[ndx]=0.0;
-//                m_S_bedx_by_elm[ndx]=0.0;
-//                m_S_intx_by_elm[ndx]=0.0;
-//                m_S_gy_by_elm[ndx]=0.0;
-//                m_S_bedy_by_elm[ndx]=0.0;
-//                m_S_inty_by_elm[ndx]=0.0;
             }
         }
     }
@@ -1364,24 +1132,10 @@ void OutLine::combine_results_from_threads()
                 max_kinergy[i] = max(max_kinergy[i], max_kinergy_loc[j][i]);
                 max_dynamic_pressure[i] = max(max_dynamic_pressure[i], max_dynamic_pressure_loc[j][i]);
 
-//                S_gx[i] = S_gx_loc[j][i];
-//                S_gy[i] = S_gy_loc[j][i];
-//                S_bedx[i] = S_bedx_loc[j][i];
-//                S_bedy[i] = S_bedy_loc[j][i];
-//                S_intx[i] = S_intx_loc[j][i];
-//                S_inty[i] = S_inty_loc[j][i];
-
                 pileheight_loc[j][i] = 0.0;
                 max_kinergy_loc[j][i] = 0.0;
                 max_dynamic_pressure_loc[j][i] = 0.0;
                 cum_kinergy_loc[j][i] = 0.0;
-
-//                S_gx_loc[j][i] = 0.0;
-//                S_gy_loc[j][i] = 0.0;
-//                S_bedx_loc[j][i] = 0.0;
-//                S_bedy_loc[j][i] = 0.0;
-//                S_intx_loc[j][i] = 0.0;
-//                S_inty_loc[j][i] = 0.0;
             }
         }
     }
@@ -1463,8 +1217,8 @@ void OutLine::output(MatProps* matprops_ptr, StatProps* statprops_ptr)
         for(iy = 0; iy < Ny; iy++)
         {
             for(ix = 0; ix < Nx - 1; ix++)
-                fprintf(fp, "%g ", S_gx[iy*stride+ix] * matprops_ptr->scale.height * matprops_ptr->scale.gravity);
-            fprintf(fp, "%g\n", S_gx[iy*stride+ix] * matprops_ptr->scale.height * matprops_ptr->scale.gravity);
+                fprintf(fp, "%g ", pileheight[iy*stride+ix] * matprops_ptr->scale.height);
+            fprintf(fp, "%g\n", pileheight[iy*stride+ix] * matprops_ptr->scale.height);
         }
         fclose(fp);
 
@@ -1637,126 +1391,6 @@ void OutLine::output(MatProps* matprops_ptr, StatProps* statprops_ptr)
     return;
 }
 
-
-///*! this function outputs the maximum over time map of pileheights
-// *  to the file pileheightrecord.xxxxxx
-// */
-//void OutLine::outputST(MatProps* matprops_ptr, TimeProps* timeprops_ptr)
-//{
-//	if (elementType==ElementType::SinglePhase)
-//	{
-//		double ST_SCALE = matprops_ptr->scale.height * matprops_ptr->scale.gravity;
-//
-//		// output for S_g
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_gx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_gx[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_gx[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_gy."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_gy[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_gy[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	    // output for S_bed
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_bedx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_bedx[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_bedx[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_bedy."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_bedy[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_bedy[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	    // output for S_int
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_intx."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_intx[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_intx[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	    {
-//	        int ix, iy;
-//	        FILE *fp;
-//	        ostringstream filename1;
-//
-//	        filename1<<output_prefix<<"S_inty."<<setw(3)<< setfill('0') <<internal<<timeprops_ptr->iVizOutSaved<<std::ends;
-//	        fp = fopen(filename1.str().c_str(), "wt");
-//
-//	        for(iy = 0; iy < Ny; iy++)
-//	        {
-//	            for(ix = 0; ix < Nx - 1; ix++)
-//	                fprintf(fp, "%g,", S_inty[iy*stride+ix] * ST_SCALE);
-//	            fprintf(fp, "%g\n", S_inty[iy*stride+ix] * ST_SCALE);
-//	        }
-//	        fclose(fp);
-//	    }
-//
-//	}
-//
-//    return;
-//}
-
 //! this function reads in the previous map of maximum throughout time pileheight stored in the file pileheightrecord.xxxxxx during restart
 void OutLine::reload(MatProps* matprops_ptr, StatProps* statprops_ptr)
 {
@@ -1838,13 +1472,6 @@ void OutLine::h5write(H5::CommonFG *parent, string group_name)
         TiH5_writeArray2DDataSet(group, max_kinergy,Ny,stride);
         TiH5_writeArray2DDataSet(group, max_dynamic_pressure,Ny,stride);
         TiH5_writeArray2DDataSet(group, cum_kinergy,Ny,stride);
-
-//        TiH5_writeArray2DDataSet(group, S_gx,Ny,stride);
-//        TiH5_writeArray2DDataSet(group, S_bedx,Ny,stride);
-//        TiH5_writeArray2DDataSet(group, S_intx,Ny,stride);
-//        TiH5_writeArray2DDataSet(group, S_gy,Ny,stride);
-//        TiH5_writeArray2DDataSet(group, S_bedy,Ny,stride);
-//        TiH5_writeArray2DDataSet(group, S_inty,Ny,stride);
     }
     TiH5_writeScalarDataTypeAttribute(group, elementType, datatypeElementType);
 
@@ -1878,13 +1505,6 @@ void OutLine::h5read(const H5::CommonFG *parent, const  string group_name)
         TiH5_readArray2DDataSet(group, max_kinergy,Ny,stride);
         TiH5_readArray2DDataSet(group, max_dynamic_pressure,Ny,stride);
         TiH5_readArray2DDataSet(group, cum_kinergy,Ny,stride);
-
-//        TiH5_readArray2DDataSet(group, S_gx,Ny,stride);
-//        TiH5_readArray2DDataSet(group, S_bedx,Ny,stride);
-//        TiH5_readArray2DDataSet(group, S_intx,Ny,stride);
-//        TiH5_readArray2DDataSet(group, S_gy,Ny,stride);
-//        TiH5_readArray2DDataSet(group, S_bedy,Ny,stride);
-//        TiH5_readArray2DDataSet(group, S_inty,Ny,stride);
 
         update_on_changed_geometry();
     }
