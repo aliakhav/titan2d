@@ -163,6 +163,8 @@ protected:
     std::vector<double> N_elements;
     std::vector<double> Time_el;
     std::vector<double> Area;
+    std::vector<double> Volume;
+    std::vector<double> MVelocity;
     std::vector<double> Finertx;
     std::vector<double> Finerty;
     std::vector<double> Fconvx;

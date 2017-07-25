@@ -846,7 +846,7 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
 
     if (timeprops.iVizOutSaved > 0){
 
-    	double temp_A = 0.0;
+    	double temp_A = 0.0, Temp_Vol = 0.0, Temp_Vel = 0.0;
         double temp_Fx [5] = {}, temp_Fy [5] = {}, temp_FV [5] = {}, temp_P [5] = {};
         for (int i=0; i < 5; i++)
         {
@@ -855,8 +855,8 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
         	temp_FV[i] = 0.0;
         	temp_P[i] = 0.0;
         }
-        double Vx, Vy, Vm;
-        double teta = 38.5;
+        double Vx, Vy, Vm, dV, dA;
+//        double teta = 38.5;
 
     	int no_of_buckets = ElemTable->get_no_of_buckets();
     	vector<HashEntryLine> &bucket = ElemTable->bucket;
@@ -867,98 +867,51 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     		for (int ielm = 0; ielm < bucket[ibuck].ndx.size(); ielm++) {
     			Element* Curr_El = &(elenode_[bucket[ibuck].ndx[ielm]]);
 
-    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
+			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
+
+				dA = Curr_El->dx(0) * Curr_El->dx(1);
+				dV = Curr_El->state_vars(0) * dA;
+				Temp_Vol += dV;
+				Temp_Vel += dA * sqrt(Curr_El->state_vars(1)*Curr_El->state_vars(1)+Curr_El->state_vars(2)*Curr_El->state_vars(2));
+
+
+			}
+    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.05) {
 
     				Vx = Curr_El->state_vars(1)/Curr_El->state_vars(0);
     				Vy = Curr_El->state_vars(2)/Curr_El->state_vars(0);
 
     				Vm = sqrt(Vx*Vx+Vy*Vy);
 
-//    				if (Curr_El->coord(1) > 0.0)
-//    				{
-    					temp_Fx[0] += Curr_El->Drivs(0);
-    					temp_Fy[0] += Curr_El->Drivs(2);
-    					temp_Fx[1] += Curr_El->Drivs(1);
-    					temp_Fy[1] += Curr_El->Drivs(3);
-        				temp_Fx[2] += Curr_El->STs(0);
-        				temp_Fy[2] += Curr_El->STs(NUM_STATE_VARS);
-        				temp_Fx[3] += Curr_El->STs(1);
-        				temp_Fy[3] += Curr_El->STs(1 + NUM_STATE_VARS);
-        				temp_Fx[4] += Curr_El->STs(2);
-        				temp_Fy[4] += Curr_El->STs(2 + NUM_STATE_VARS);
+    				temp_Fx[0] += Curr_El->Drivs(0);
+    				temp_Fy[0] += Curr_El->Drivs(2);
+    				temp_Fx[1] += Curr_El->Drivs(1);
+    				temp_Fy[1] += Curr_El->Drivs(3);
+        			temp_Fx[2] += Curr_El->STs(0);
+        			temp_Fy[2] += Curr_El->STs(NUM_STATE_VARS);
+        			temp_Fx[3] += Curr_El->STs(1);
+        			temp_Fy[3] += Curr_El->STs(1 + NUM_STATE_VARS);
+        			temp_Fx[4] += Curr_El->STs(2);
+        			temp_Fy[4] += Curr_El->STs(2 + NUM_STATE_VARS);
 
-        				temp_P[0] += Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy;
-        				temp_P[1] += Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy;
-        				temp_P[2] += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
-        				temp_P[3] += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
-        				temp_P[4] += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
+        			temp_P[0] += Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy;
+        			temp_P[1] += Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy;
+        			temp_P[2] += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
+        			temp_P[3] += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
+        			temp_P[4] += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
 
-        				if (Vm > 0.0)
-        				{
+        			if (Vm > 0.0) {
             				temp_FV[0] += temp_P[0] / Vm;
             				temp_FV[1] += temp_P[1] / Vm;
             				temp_FV[2] += temp_P[2] / Vm;
             				temp_FV[3] += temp_P[3] / Vm;
             				temp_FV[4] += temp_P[4] / Vm;
-        				}
+        			}
 
-        				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
-//    				}
-//
-//    				if (Curr_El->coord(1) == 0.0)
-//    				{
-//    					temp_Fx[0] += 0.5*Curr_El->Drivs(0);
-//    					temp_Fy[0] += 0.5*Curr_El->Drivs(2);
-//    					temp_Fx[1] += 0.5*Curr_El->Drivs(1);
-//    					temp_Fy[1] += 0.5*Curr_El->Drivs(3);
-//    					temp_Fx[2] += 0.5*Curr_El->STs(0);
-//    					temp_Fy[2] += 0.5*Curr_El->STs(NUM_STATE_VARS);
-//    					temp_Fx[3] += 0.5*Curr_El->STs(1);
-//    					temp_Fy[3] += 0.5*Curr_El->STs(1 + NUM_STATE_VARS);
-//    					temp_Fx[4] += 0.5*Curr_El->STs(2);
-//    					temp_Fy[4] += 0.5*Curr_El->STs(2 + NUM_STATE_VARS);
-//
-//        				temp_P[0] += 0.5*(Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy);
-//        				temp_P[1] += 0.5*(Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy);
-//        				temp_P[2] += 0.5*(Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy);
-//        				temp_P[3] += 0.5*(Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy);
-//        				temp_P[4] += 0.5*(Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy);
-//
-//        				if (Vm > 0.0)
-//        				{
-//            				temp_FV[0] += 0.5*temp_P[0] / Vm;
-//            				temp_FV[1] += 0.5*temp_P[1] / Vm;
-//            				temp_FV[2] += 0.5*temp_P[2] / Vm;
-//            				temp_FV[3] += 0.5*temp_P[3] / Vm;
-//            				temp_FV[4] += 0.5*temp_P[4] / Vm;
-//        				}
-//
-//
-//        				temp_A += 0.5*Curr_El->dx(0)*Curr_El->dx(1);
-//    				}
-
-//    				if (Curr_El->coord(0) < 0.0)
-//    					XX.push_back(Curr_El->coord(0)*scale_.length/cos(teta*PI/180.0));
-//    				else
-//    					XX.push_back(Curr_El->coord(0)*scale_.length);
-//    				YY.push_back(Curr_El->coord(1)*scale_.length);
-
+       				temp_A += Curr_El->dx(0)*Curr_El->dx(1);
     			}
     		}
     	}
-
-//    	double X_max,X_min,Y_max,Y_min;
-//    	int SXX = XX.size();
-//    	int SYY = YY.size();
-//    	std::sort( XX.begin(), XX.end() );
-//    	std::sort( YY.begin(), YY.end() );
-//    	X_min = XX[0];
-//    	X_max = XX[SXX-1];
-//    	Y_min = YY[0];
-//    	Y_max = YY[SYY-1];
-//
-//    	X_el.push_back(fabs(X_max - X_min));
-//    	Y_el.push_back(fabs(Y_max - Y_min));
 
     	Area.push_back(temp_A);
     	Finertx.push_back(temp_Fx[0]);
@@ -983,6 +936,9 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
         FVgrav.push_back(temp_FV[2]);
         FVbed.push_back(temp_FV[3]);
         FVint.push_back(temp_FV[4]);
+
+        Volume.push_back(Temp_Vol);
+        MVelocity.push_back(Temp_Vel/Temp_Vol);
     }
 
 }
@@ -1345,7 +1301,6 @@ void cxxTitanSimulation::run(bool start_from_restart)
 
 
         double Vx, Vy, Vm;
-        double teta = 38.5;
 
     	int no_of_buckets = ElemTable->get_no_of_buckets();
     	vector<HashEntryLine> &bucket = ElemTable->bucket;
@@ -1356,61 +1311,56 @@ void cxxTitanSimulation::run(bool start_from_restart)
     		for (int ielm = 0; ielm < bucket[ibuck].ndx.size(); ielm++) {
     			Element* Curr_El = &(elenode_[bucket[ibuck].ndx[ielm]]);
 
-    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
+    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.05) {
 
     				Vx = Curr_El->state_vars(1)/Curr_El->state_vars(0);
     				Vy = Curr_El->state_vars(2)/Curr_El->state_vars(0);
 
     				Vm = sqrt(Vx*Vx+Vy*Vy);
 
-    				if (Curr_El->coord(1) > 0.0)
-    				{
-    					T_Finertx += Curr_El->Drivs(0);
-    					T_Finerty += Curr_El->Drivs(2);
-    					T_Fconvx += Curr_El->Drivs(1);
-    					T_Fconvy += Curr_El->Drivs(3);
-    					T_Fgravx += Curr_El->STs(0);
-    					T_Fgravy += Curr_El->STs(NUM_STATE_VARS);
-    					T_Fbx+= Curr_El->STs(1);
-    					T_Fby += Curr_El->STs(1 + NUM_STATE_VARS);
-    					T_Fix += Curr_El->STs(2);
-    					T_Fiy += Curr_El->STs(2 + NUM_STATE_VARS);
+    				T_Finertx += Curr_El->Drivs(0);
+    				T_Finerty += Curr_El->Drivs(2);
+    				T_Fconvx += Curr_El->Drivs(1);
+    				T_Fconvy += Curr_El->Drivs(3);
+    				T_Fgravx += Curr_El->STs(0);
+    				T_Fgravy += Curr_El->STs(NUM_STATE_VARS);
+    				T_Fbx += Curr_El->STs(1);
+    				T_Fby += Curr_El->STs(1 + NUM_STATE_VARS);
+    				T_Fix += Curr_El->STs(2);
+    				T_Fiy += Curr_El->STs(2 + NUM_STATE_VARS);
 
-    					T_Pinert += Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy;
-    					T_Pconv += Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy;
-    					T_Pgrav += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
-    					T_Pbed += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
-    					T_Pint += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
-    				}
-
-    				if (Curr_El->coord(1) == 0.0)
-    				{
-    					T_Finertx += 0.5*Curr_El->Drivs(0);
-    					T_Finerty += 0.5*Curr_El->Drivs(2);
-    					T_Fconvx += 0.5*Curr_El->Drivs(1);
-    					T_Fconvy += 0.5*Curr_El->Drivs(3);
-    					T_Fgravx += 0.5*Curr_El->STs(0);
-    					T_Fgravy += 0.5*Curr_El->STs(NUM_STATE_VARS);
-    					T_Fbx+= 0.5*Curr_El->STs(1);
-    					T_Fby += 0.5*Curr_El->STs(1 + NUM_STATE_VARS);
-    					T_Fix += 0.5*Curr_El->STs(2);
-    					T_Fiy += 0.5*Curr_El->STs(2 + NUM_STATE_VARS);
-
-    					T_Pinert += 0.5*(Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy);
-    					T_Pconv += 0.5*(Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy);
-    					T_Pgrav += 0.5*(Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy);
-    					T_Pbed += 0.5*(Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy);
-    					T_Pint += 0.5*(Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy);
-    				}
+    				T_Pinert += Curr_El->Drivs(0)*Vx + Curr_El->Drivs(2)*Vy;
+    				T_Pconv += Curr_El->Drivs(1)*Vx + Curr_El->Drivs(3)*Vy;
+    				T_Pgrav += Curr_El->STs(0)*Vx + Curr_El->STs(NUM_STATE_VARS)*Vy;
+    				T_Pbed += Curr_El->STs(1)*Vx + Curr_El->STs(1 + NUM_STATE_VARS)*Vy;
+    				T_Pint += Curr_El->STs(2)*Vx + Curr_El->STs(2 + NUM_STATE_VARS)*Vy;
     			}
     		}
     	}
+
+    	T_Finertx *= timeprops.dtime;
+    	T_Finerty *= timeprops.dtime;
+    	T_Fconvx *= timeprops.dtime;
+    	T_Fconvy *= timeprops.dtime;
+    	T_Fgravx *= timeprops.dtime;
+    	T_Fgravy *= timeprops.dtime;
+    	T_Fbx *= timeprops.dtime;
+    	T_Fby *= timeprops.dtime;
+    	T_Fix *= timeprops.dtime;
+    	T_Fiy *= timeprops.dtime;
+
+    	T_Pinert *= timeprops.dtime;
+    	T_Pconv *= timeprops.dtime;
+    	T_Pgrav *= timeprops.dtime;
+    	T_Pbed *= timeprops.dtime;
+    	T_Pint *= timeprops.dtime;
     }
 
-    double density = 802.73;
+    double density = 1800.0;
     double F_SCALE = density * scale_.gravity * scale_.height * scale_.length * scale_.length;
     double P_SCALE = F_SCALE * sqrt(scale_.gravity * scale_.length);
     double A_SCALE = scale_.length * scale_.length;
+    double T_SCALE= timeprops.TIME_SCALE;
 
     FILE *fp;
     fp = fopen("elements.dat","w");
@@ -1444,12 +1394,12 @@ void cxxTitanSimulation::run(bool start_from_restart)
 
     FILE *fp5;
     fp5 = fopen("ForceTimeInteg.dat","w");
-    fprintf(fp,"%e,%e,%e,%e,%e,%e,%e,%e,%e,%e\n", T_Finertx*F_SCALE, T_Finerty*F_SCALE, T_Fconvx*F_SCALE, T_Fconvy*F_SCALE, T_Fgravx*F_SCALE, T_Fgravy*F_SCALE, T_Fbx*F_SCALE, T_Fby*F_SCALE, T_Fix*F_SCALE, T_Fiy*F_SCALE);
+    fprintf(fp,"%e,%e,%e,%e,%e,%e,%e,%e,%e,%e\n", T_Finertx*F_SCALE*T_SCALE, T_Finerty*F_SCALE*T_SCALE, T_Fconvx*F_SCALE*T_SCALE, T_Fconvy*F_SCALE*T_SCALE, T_Fgravx*F_SCALE*T_SCALE, T_Fgravy*F_SCALE*T_SCALE, T_Fbx*F_SCALE*T_SCALE, T_Fby*F_SCALE*T_SCALE, T_Fix*F_SCALE*T_SCALE, T_Fiy*F_SCALE*T_SCALE);
     fclose(fp5);
 
     FILE *fp6;
     fp6 = fopen("PowerTimeInteg.dat","w");
-    fprintf(fp,"%e,%e,%e,%e,%e\n", T_Pinert*F_SCALE, T_Pconv*F_SCALE, T_Pgrav*F_SCALE, T_Pbed*F_SCALE, T_Pint*F_SCALE);
+    fprintf(fp,"%e,%e,%e,%e,%e\n", T_Pinert*P_SCALE*T_SCALE, T_Pconv*P_SCALE*T_SCALE, T_Pgrav*P_SCALE*T_SCALE, T_Pbed*P_SCALE*T_SCALE, T_Pint*P_SCALE*T_SCALE);
     fclose(fp6);
 
     FILE *fp7;
@@ -1457,6 +1407,13 @@ void cxxTitanSimulation::run(bool start_from_restart)
     for(i = 0; i < Area.size(); i++)
     	fprintf(fp,"%e\n", Area[i]*A_SCALE);
     fclose(fp7);
+
+    FILE *fp8;
+    fp8 = fopen("MeanVel_TotalVolume.dat","w");
+    for(i = 0; i < Volume.size(); i++)
+        fprintf(fp,"%e,%e\n", Volume[i] * A_SCALE * scale_.height, MVelocity[i] * sqrt(scale_.gravity * scale_.length));
+    fclose(fp8);
+
 
     move_data(numprocs, myid, ElemTable, NodeTable, &timeprops);
     PROFILING1_STOP(tsim_iter,pt_start0);
