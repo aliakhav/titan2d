@@ -867,7 +867,7 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
     		for (int ielm = 0; ielm < bucket[ibuck].ndx.size(); ielm++) {
     			Element* Curr_El = &(elenode_[bucket[ibuck].ndx[ielm]]);
 
-			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.0001) {
+			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.05) {
 
 				dA = Curr_El->dx(0) * Curr_El->dx(1);
 				dV = Curr_El->state_vars(0) * dA;
@@ -875,8 +875,8 @@ void cxxTitanSimulation::save_vizoutput_file(const int mode)
 				Temp_Vel += dA * sqrt(Curr_El->state_vars(1)*Curr_El->state_vars(1)+Curr_El->state_vars(2)*Curr_El->state_vars(2));
 
 
-			}
-    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.05) {
+//			}
+//    			if (Curr_El->adapted_flag() > 0 && Curr_El->state_vars(0)*scale_.height >= 0.05) {
 
     				Vx = Curr_El->state_vars(1)/Curr_El->state_vars(0);
     				Vy = Curr_El->state_vars(2)/Curr_El->state_vars(0);
